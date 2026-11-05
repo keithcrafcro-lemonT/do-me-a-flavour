@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#E8E3D6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Jarvis">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<title>Jarvis</title>
+<style>
+  :root{
+    --paper:#E8E3D6; --card:#FFFDF8; --ink:#2B2A26; --ink-soft:#6B685F;
+    --line:#D8D2C0; --plum:#6B3F55; --plum-deep:#4E2E3E; --track:#DDD6C4; --gold:#B8842E; --sage:#6F7C5C;
+  }
+  *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,"Noto Serif TC","PMingLiU",serif;min-height:100vh;}
+  .wrap{max-width:980px;margin:0 auto;padding:36px 24px 90px;}
+  button{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+
+  /* ---------- 頂部 ---------- */
+  .bar{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:20px;}
+  .eyebrow{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:13px;color:var(--ink-soft);margin-bottom:6px;}
+  h1{font-size:40px;margin:0;font-weight:400;border-bottom:2px solid var(--ink);display:inline-block;padding-bottom:6px;}
+  .syncchip{
+    font-size:12px;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:6px 11px;cursor:pointer;
+    display:flex;gap:7px;align-items:center;color:var(--ink-soft);
+  }
+  .syncchip i{width:8px;height:8px;border-radius:50%;background:#B5AE9C;display:inline-block;}
+  .syncchip[data-s=synced] i{background:var(--sage);}
+  .syncchip[data-s=syncing] i,.syncchip[data-s=connecting] i{background:var(--gold);}
+  .syncchip[data-s=error] i,.syncchip[data-s=offline] i{background:#C0453A;}
+  .tabs{display:flex;gap:6px;margin:0 0 26px;border-bottom:1px solid var(--line);}
+  .tabs button{background:none;border:none;padding:10px 16px;font-size:15px;color:var(--ink-soft);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;}
+  .tabs button.on{color:var(--ink);border-bottom-color:var(--plum);font-weight:600;}
+
+  .btn{background:var(--plum);color:#fff;border:none;padding:9px 16px;border-radius:2px;font-size:14px;cursor:pointer;font-weight:600;font-family:inherit;}
+  .btn.ghost{background:none;color:var(--ink-soft);border:1px solid var(--line);font-weight:400;}
+  .empty{font-family:-apple-system,sans-serif;color:var(--ink-soft);font-size:14px;padding:26px 0;text-align:center;}
+
+  /* ---------- 約朋友 ---------- */
+  .f-draw{background:var(--plum-deep);color:#F3EEE6;border-radius:3px;padding:26px 24px;margin-bottom:34px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .f-draw h2{font-family:Georgia,"Noto Serif TC",serif;font-size:20px;font-weight:400;margin:0 0 4px;}
+  .f-draw p{font-size:13px;color:#D8CCC8;margin:0 0 16px;}
+  .drawbtn{background:#F3EEE6;color:var(--plum-deep);border:none;padding:12px 22px;font-size:15px;border-radius:2px;cursor:pointer;font-weight:600;}
+  .drawbtn:hover{background:#fff;}
+  .f-result{margin-top:18px;padding:16px;background:rgba(255,255,255,.08);border-left:3px solid var(--gold);border-radius:2px;animation:rise .3s ease-out;}
+  .f-result .nm{font-family:Georgia,"Noto Serif TC",serif;font-size:24px;margin-bottom:4px;}
+  .f-result .mt{font-size:13px;color:#D8CCC8;}
+  .f-result .acts{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;}
+  .f-result button{background:transparent;border:1px solid rgba(255,255,255,.4);color:#F3EEE6;padding:7px 14px;border-radius:2px;cursor:pointer;font-size:13px;}
+  .f-result button.primary{background:var(--gold);border-color:var(--gold);color:#2B2114;font-weight:600;}
+  .f-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .f-head h2{font-size:15px;font-weight:600;color:var(--ink-soft);margin:0;}
+  .linkbtn{background:none;border:none;color:var(--plum);font-size:14px;cursor:pointer;text-decoration:underline;padding:0;}
+  .f-card{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px 18px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .f-card .l{flex:1;min-width:0;}
+  .f-card .nm{font-size:19px;word-break:break-word;}
+  .f-card .tg{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:12px;color:var(--ink-soft);margin-top:4px;}
+  .f-card .rt{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+  .pill{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:12px;padding:3px 9px;border-radius:10px;white-space:nowrap;}
+  .pill.over{background:#F3E3D2;color:var(--gold);}
+  .pill.ok{background:#E7EBE1;color:var(--sage);}
+  .txtbtn{background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:13px;text-decoration:underline;padding:2px;}
+  .txtbtn.danger{color:#A6543D;}
+
+  /* ---------- 目標焦點面板 ---------- */
+  .focuspanel{background:var(--plum-deep);color:#F3EEE6;border-radius:3px;padding:20px 22px 22px;margin-bottom:36px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .focuspanel .ttl{font-family:Georgia,"Noto Serif TC",serif;font-size:20px;margin:0 0 4px;font-weight:400;}
+  .focuspanel .hintline{font-size:12px;color:#D8CCC8;margin-bottom:16px;}
+  .notice{background:rgba(255,255,255,.1);border-left:3px solid var(--gold);padding:8px 12px;font-size:12px;margin-bottom:14px;display:flex;justify-content:space-between;gap:10px;align-items:center;}
+  .notice button{background:none;border:1px solid rgba(255,255,255,.4);color:#F3EEE6;border-radius:2px;font-size:12px;padding:3px 10px;cursor:pointer;}
+  .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:720px){.fgrid{grid-template-columns:1fr;}}
+  .fh{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px;color:#D8CCC8;}
+  .fh b{color:#F3EEE6;font-variant-numeric:tabular-nums;}
+  .fitem{display:flex;gap:9px;align-items:flex-start;background:rgba(255,255,255,.08);border-left:3px solid var(--c);padding:9px 10px;border-radius:2px;margin-bottom:6px;cursor:pointer;}
+  .fitem input{margin-top:3px;accent-color:var(--c);width:15px;height:15px;cursor:pointer;flex:none;}
+  .fitem .ftx{font-size:13px;line-height:1.4;word-break:break-word;}
+  .fitem .ftx small{display:block;font-size:11px;color:#CDBFBA;margin-top:2px;}
+  .fitem.done .ftx{text-decoration:line-through;opacity:.6;}
+  .fadd{width:100%;background:transparent;border:1px dashed rgba(255,255,255,.35);color:#E6DCD6;font-size:13px;padding:9px;border-radius:2px;cursor:pointer;}
+  .fadd:hover{background:rgba(255,255,255,.06);}
+
+  /* ---------- 目標環 ---------- */
+  .layout{display:grid;grid-template-columns:minmax(300px,440px) 1fr;gap:36px;align-items:start;}
+  @media(max-width:820px){.layout{grid-template-columns:1fr;}}
+  .chart{position:relative;width:100%;max-width:440px;aspect-ratio:1/1;margin:0 auto;}
+  .chart svg{width:100%;height:100%;display:block;overflow:visible;}
+  .ring{cursor:pointer;transition:opacity .2s;}
+  .ring .track{fill:none;stroke:var(--track);stroke-width:var(--sw);transition:stroke-width .22s ease;}
+  .ring .arc{fill:none;stroke-width:var(--sw);stroke-linecap:round;transition:stroke-width .22s ease,stroke-dasharray .6s ease;}
+  .ring .hit{fill:none;stroke:transparent;stroke-width:var(--hit);pointer-events:stroke;}
+  .ring.explore .track{stroke-dasharray:3 6;}
+  .ring.explore .arc{opacity:.55;}
+  .ring.focus .track,.ring.focus .arc{stroke-width:var(--swh);}
+  .ring.dim{opacity:.22;}
+  .center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:34%;text-align:center;pointer-events:none;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .center .cat{font-size:12px;letter-spacing:.04em;margin-bottom:2px;min-height:16px;}
+  .center .pct{font-family:Georgia,serif;font-size:clamp(30px,8vw,44px);line-height:1.05;transition:transform .2s;}
+  .center .pct.big{transform:scale(1.12);}
+  .center .nm{font-size:13px;color:var(--ink-soft);margin-top:4px;line-height:1.3;word-break:break-word;}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .chip{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:13px;padding:5px 11px;border-radius:14px;border:1px solid var(--line);background:var(--card);display:flex;align-items:center;gap:7px;}
+  .chip i{width:10px;height:10px;border-radius:50%;display:inline-block;}
+  .chip b{font-weight:600;color:var(--ink-soft);}
+  .chip.add{border-style:dashed;color:var(--plum);cursor:pointer;background:transparent;}
+  .formbox{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:14px;margin-bottom:20px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .formbox .r{display:flex;gap:8px;flex-wrap:wrap;}
+  .formbox input[type=text],.formbox select{flex:1;min-width:120px;padding:9px 10px;border:1px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .formbox input[type=color]{width:42px;height:38px;border:1px solid var(--line);border-radius:2px;background:#fff;padding:2px;}
+  #catForm{display:none;margin-top:10px;}
+  .group{margin-bottom:18px;}
+  .ghead{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:13px;color:var(--ink-soft);margin-bottom:6px;display:flex;justify-content:space-between;}
+  .row{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;transition:border-color .15s,box-shadow .15s;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .row.focus{border-color:var(--c);box-shadow:0 0 0 1px var(--c);}
+  .row .dot{width:10px;height:10px;border-radius:50%;flex:none;}
+  .row .gname{flex:1;min-width:0;font-size:14px;cursor:pointer;}
+  .row .gname:hover{text-decoration:underline;}
+  .row .cnt{font-size:12px;color:var(--ink-soft);margin-left:8px;}
+  .row .tag{font-size:11px;color:var(--gold);border:1px solid var(--gold);border-radius:8px;padding:0 6px;margin-left:8px;}
+  .row input[type=range]{width:120px;accent-color:var(--c);}
+  .row .bar2{width:120px;height:6px;background:var(--track);border-radius:3px;overflow:hidden;}
+  .row .bar2 i{display:block;height:100%;background:var(--c);}
+  .row .pv{width:44px;text-align:right;font-size:13px;color:var(--ink-soft);font-variant-numeric:tabular-nums;}
+  .row .x{background:none;border:none;color:var(--ink-soft);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;}
+  .row .cf{font-size:13px;color:#A6543D;}
+  .row .yes{background:#A6543D;color:#fff;border:none;border-radius:2px;padding:5px 11px;font-size:12px;cursor:pointer;}
+  .row .no{background:none;border:1px solid var(--line);color:var(--ink-soft);border-radius:2px;padding:5px 11px;font-size:12px;cursor:pointer;}
+  @media(max-width:520px){.row input[type=range],.row .bar2{width:80px;}}
+
+  /* ---------- CPD ---------- */
+  .cpd-add{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:16px;margin-bottom:22px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .cpd-add h2,.cpd-filter h2{font-size:15px;font-weight:600;color:var(--ink-soft);margin:0 0 12px;}
+  .cpd-add .r{display:grid;grid-template-columns:1fr 110px 150px auto;gap:8px;align-items:end;}
+  @media(max-width:640px){.cpd-add .r{grid-template-columns:1fr 1fr;}.cpd-add .r .c-name{grid-column:1/-1;}.cpd-add .r button{grid-column:1/-1;}}
+  .cpd-add label,.cpd-filter label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:4px;}
+  .cpd-add input,.cpd-filter input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .cpd-msg{font-size:13px;color:#8A5A12;background:#F3E3D2;border-radius:2px;padding:8px 10px;margin-top:10px;}
+  .cpd-filter{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:14px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .cpd-filter .f{width:150px;}
+  .cpd-filter .quick{display:flex;gap:8px;padding-bottom:2px;}
+  .cpd-sum{background:var(--plum-deep);color:#F3EEE6;border-radius:3px;padding:16px 20px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .cpd-sum .big{font-family:Georgia,serif;font-size:34px;line-height:1.1;}
+  .cpd-sum .big small{font-size:15px;margin-left:4px;color:#D8CCC8;}
+  .cpd-sum .sub2{font-size:13px;color:#D8CCC8;text-align:right;line-height:1.5;}
+  table.cpd{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:3px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:14px;}
+  table.cpd th{font-weight:600;font-size:12px;color:var(--ink-soft);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:#F6F1E6;}
+  table.cpd td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  table.cpd tr:last-child td{border-bottom:none;}
+  table.cpd .d{white-space:nowrap;color:var(--ink-soft);font-variant-numeric:tabular-nums;width:100px;}
+  table.cpd .h{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums;width:70px;}
+  table.cpd th.h{text-align:right;}
+  table.cpd .n{word-break:break-word;}
+  table.cpd .a{white-space:nowrap;text-align:right;width:110px;}
+  table.cpd tfoot td{font-weight:600;background:#F6F1E6;border-top:2px solid var(--line);border-bottom:none;}
+  .cpd-yes{background:#A6543D;color:#fff;border:none;border-radius:2px;padding:4px 9px;font-size:12px;cursor:pointer;}
+
+  /* ---------- 視窗（共用） ---------- */
+  .mbg{position:fixed;inset:0;background:rgba(43,42,38,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;}
+  .modal{background:var(--card);border-radius:4px;width:100%;max-width:500px;max-height:88vh;overflow:auto;padding:24px;border-top:4px solid var(--c);font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;animation:rise .25s ease-out;}
+  @keyframes rise{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+  .modal .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .modal h3{font-family:Georgia,"Noto Serif TC",serif;font-weight:400;font-size:24px;margin:0 0 4px;}
+  .modal .meta{font-size:13px;color:var(--ink-soft);margin-bottom:16px;}
+  .modal .meta b{color:var(--c);font-weight:600;}
+  .modal .close{background:none;border:none;font-size:26px;line-height:1;color:var(--ink-soft);cursor:pointer;padding:0 4px;}
+  .opts{background:#F6F1E6;border-radius:3px;padding:12px;margin-bottom:16px;}
+  .seg{display:flex;gap:6px;margin-bottom:8px;}
+  .seg button{flex:1;padding:8px 6px;border:1px solid var(--line);background:#fff;border-radius:2px;font-size:12px;color:var(--ink-soft);cursor:pointer;}
+  .seg button.on{background:var(--c);border-color:var(--c);color:#fff;}
+  .mrow{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .mrow input{flex:1;accent-color:var(--c);}
+  .mrow span{font-size:13px;color:var(--ink-soft);width:40px;text-align:right;}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;}
+  .chk input{accent-color:var(--c);}
+  .hint{font-size:12px;color:var(--ink-soft);line-height:1.5;margin-top:6px;}
+  .warn{background:#F3E3D2;color:#8A5A12;font-size:13px;padding:8px 10px;border-radius:2px;margin-bottom:10px;line-height:1.5;}
+  .mt-add{display:flex;gap:8px;margin-bottom:12px;}
+  .mt-add input{flex:1;padding:10px;border:1px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .mt-add button{background:var(--c);color:#fff;border:none;padding:0 16px;border-radius:2px;font-size:14px;font-weight:600;cursor:pointer;}
+  .task{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line);}
+  .task input[type=checkbox]{margin-top:3px;accent-color:var(--c);width:16px;height:16px;cursor:pointer;flex:none;}
+  .task .body{flex:1;min-width:0;}
+  .task .tx{font-size:14px;line-height:1.45;word-break:break-word;}
+  .task.done .tx{text-decoration:line-through;color:var(--ink-soft);}
+  .task .ts{font-size:11px;color:var(--ink-soft);margin-top:3px;line-height:1.5;}
+  .task select{font-size:12px;border:1px solid var(--line);border-radius:2px;background:#fff;padding:3px 4px;color:var(--ink-soft);font-family:inherit;}
+  .task .del{background:none;border:none;color:var(--ink-soft);font-size:18px;cursor:pointer;padding:0 4px;line-height:1;}
+  .mt-empty{font-size:13px;color:var(--ink-soft);padding:14px 0;border-top:1px solid var(--line);line-height:1.5;}
+  .pgroup{margin-bottom:14px;}
+  .pgroup .gh{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+  .pgroup .gh i{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .pick{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:2px;padding:10px 12px;margin-bottom:5px;font-size:14px;cursor:pointer;color:var(--ink);}
+  .pick:hover{border-color:var(--plum);background:#FBF7EE;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px;}
+  .field input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .macts{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;flex-wrap:wrap;}
+  .macts .r{display:flex;gap:10px;}
+  .macts .cf{font-size:13px;color:#A6543D;margin-right:6px;}
+  .macts .dangerbtn{background:#A6543D;color:#fff;border:none;border-radius:2px;padding:6px 12px;font-size:13px;cursor:pointer;}
+  .srow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+  .sep{border:none;border-top:1px solid var(--line);margin:18px 0;}
+  .plain{font-size:13px;color:var(--ink-soft);line-height:1.6;margin-bottom:14px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <div>
+      <div class="eyebrow" id="todayStr"></div>
+      <h1>Jarvis</h1>
+    </div>
+    <button class="syncchip" id="syncChip" data-s="local"><i></i><span id="syncText">僅本機</span></button>
+  </header>
+
+  <nav class="tabs">
+    <button data-tab="friends">約朋友</button>
+    <button data-tab="goals">目標</button>
+    <button data-tab="cpd">CPD</button>
+  </nav>
+
+  <!-- ===== 約朋友 ===== -->
+  <section id="view-friends">
+    <div class="f-draw">
+      <h2>唔知約邊個？</h2>
+      <p>會優先揾耐冇見嘅朋友，再從佢啱做嘅活動入面抽一個俾你。</p>
+      <button class="drawbtn" id="drawBtn">抽一個朋友</button>
+      <div id="resultBox"></div>
+    </div>
+    <div class="f-head">
+      <h2>朋友名單</h2>
+      <button class="linkbtn" id="addFriend">+ 新增朋友</button>
+    </div>
+    <div id="friendList"></div>
+  </section>
+
+  <!-- ===== 目標 ===== -->
+  <section id="view-goals" hidden>
+    <section class="focuspanel" id="focusPanel"></section>
+    <div class="layout">
+      <div>
+        <div class="chart">
+          <svg id="rings" viewBox="0 0 400 400"></svg>
+          <div class="center" id="center"></div>
+        </div>
+      </div>
+      <div>
+        <div class="legend" id="legend"></div>
+        <div class="formbox">
+          <form id="goalForm" class="r">
+            <input type="text" id="gName" placeholder="新增目標，例如：每週運動 3 次">
+            <select id="gCat"></select>
+            <button class="btn" type="submit">新增</button>
+          </form>
+          <form id="catForm" class="r">
+            <input type="text" id="cName" placeholder="新類別名，例如：閱讀">
+            <input type="color" id="cColor" value="#6F7C5C">
+            <button class="btn" type="submit">加類別</button>
+            <button class="btn ghost" type="button" id="cCancel">取消</button>
+          </form>
+        </div>
+        <div id="list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CPD ===== -->
+  <section id="view-cpd" hidden>
+    <form class="cpd-add" id="cpdForm" autocomplete="off">
+      <h2>新增 CPD 記錄</h2>
+      <div class="r">
+        <div class="c-name"><label for="cName2">CPD 名稱</label><input id="cName2" type="text" placeholder="例如：ASHRAE 通風設計 webinar"></div>
+        <div><label for="cHours">時長（小時）</label><input id="cHours" type="number" step="0.25" min="0" placeholder="例如 1.5"></div>
+        <div><label for="cDate">日期（唔填 = 今日）</label><input id="cDate" type="date"></div>
+        <button class="btn" type="submit">加入</button>
+      </div>
+      <div class="cpd-msg" id="cpdMsg" hidden></div>
+    </form>
+
+    <div class="cpd-filter">
+      <div class="f"><label for="cFrom">由</label><input id="cFrom" type="date"></div>
+      <div class="f"><label for="cTo">到</label><input id="cTo" type="date"></div>
+      <div class="quick">
+        <button class="btn ghost" type="button" id="cYear">今年</button>
+        <button class="btn ghost" type="button" id="cAll">顯示全部</button>
+      </div>
+    </div>
+
+    <div id="cpdSummary"></div>
+    <div id="cpdTable"></div>
+  </section>
+</div>
+
+<div id="modalRoot"></div>
+
+<script type="module">
+/* =====================================================================
+   Firebase 設定：喺 Firebase Console 複製 firebaseConfig，貼喺下面。
+   例如：
+   const FIREBASE_CONFIG = { apiKey:"...", authDomain:"...", projectId:"...", appId:"..." };
+   未貼嘅話，Jarvis 照常用，資料只儲存喺呢部機嘅 browser。
+   ===================================================================== */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAmAviRTFr6lM7LKi0M0TewtdIsqrujksU",
+  authDomain: "do-me-a-flavor-11207.firebaseapp.com",
+  projectId: "do-me-a-flavor-11207",
+  storageBucket: "do-me-a-flavor-11207.firebasestorage.app",
+  messagingSenderId: "170562591900",
+  appId: "1:170562591900:web:c507ac28b5e649e893a159"
+};
+
+/* ---------- 基本工具 ---------- */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const uid = ()=> 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc = s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML;};
+const escA = s=>esc(s).replace(/"/g,'&quot;');
+const pad = n=>String(n).padStart(2,'0');
+const ymd = d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function fmt(iso){
+  const d = new Date(iso);
+  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function lsGet(k,fallback){ try{ const r = localStorage.getItem(k); return r ? JSON.parse(r) : fallback; }catch(e){ return fallback; } }
+function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+const modalOpen = ()=> $('#modalRoot').children.length > 0;
+
+const LS_F = 'jarvis_friends_v1';
+const LS_G = 'goal_rings_v1';
+const LS_C = 'jarvis_cpd_v1';
+const LS_TAB = 'jarvis_tab';
+const LS_CODE = 'jarvis_code';
+
+/* =====================================================================
+   雲端同步（Firebase Firestore，用同步碼，唔使登入）
+   ===================================================================== */
+const sync = { code:null, ref:null, setDoc:null, status:'local' };
+const STATUS_TEXT = {local:'僅本機', connecting:'連接中…', syncing:'同步中…', synced:'已同步', offline:'離線', error:'同步失敗'};
+let pendingRemote = null;
+const pushTimers = {};
+
+function setStatus(s){
+  sync.status = s;
+  $('#syncChip').dataset.s = s;
+  $('#syncText').textContent = STATUS_TEXT[s];
+}
+
+function pushNow(field){
+  if(!sync.ref) return;
+  const payload = JSON.stringify(field==='friends' ? friends : field==='cpd' ? cpd : state);
+  sync.setDoc(sync.ref, {[field]:payload, updated:Date.now()}, {merge:true})
+    .then(()=>{ if(sync.status!=='offline') setStatus('synced'); })
+    .catch(e=>{ console.error(e); setStatus('error'); });
+}
+function push(field){
+  if(!sync.ref) return;
+  setStatus('syncing');
+  clearTimeout(pushTimers[field]);
+  pushTimers[field] = setTimeout(()=>pushNow(field), 500);
+}
+
+function applyRemote(d){
+  let changed = false;
+  try{
+    if(d.friends && d.friends !== JSON.stringify(friends)){
+      friends = JSON.parse(d.friends); lsSet(LS_F, friends); changed = true;
+    }
+    if(d.cpd && d.cpd !== JSON.stringify(cpd)){
+      cpd = JSON.parse(d.cpd); lsSet(LS_C, cpd); changed = true;
+    }
+    if(d.goals && d.goals !== JSON.stringify(state)){
+      state = migrate(JSON.parse(d.goals)); lsSet(LS_G, state); changed = true;
+    }
+  }catch(e){ console.error(e); }
+  if(changed){ renderAllViews(); }
+}
+
+function newCode(){
+  return [...crypto.getRandomValues(new Uint8Array(24))].map(b=>(b%36).toString(36)).join('');
+}
+const CODE_RE = /^[a-z0-9]{16,64}$/i;
+
+function resolveCode(){
+  let fromHash = null;
+  try{ fromHash = new URLSearchParams(location.hash.slice(1)).get('c'); }catch(e){}
+  let code = (fromHash && CODE_RE.test(fromHash)) ? fromHash : null;
+  let created = false;
+  if(!code){
+    try{ const s = localStorage.getItem(LS_CODE); if(s && CODE_RE.test(s)) code = s; }catch(e){}
+  }
+  if(!code){ code = newCode(); created = true; }
+  try{ localStorage.setItem(LS_CODE, code); }catch(e){}
+  try{ history.replaceState(null,'', '#c='+code); }catch(e){}
+  return {code, created};
+}
+
+async function initSync(){
+  if(!FIREBASE_CONFIG){ setStatus('local'); return; }
+  const {code, created} = resolveCode();
+  sync.code = code;
+  setStatus('connecting');
+  try{
+    const V = '10.12.2';
+    const [appMod, fsMod] = await Promise.all([
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`),
+      import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`)
+    ]);
+    const app = appMod.initializeApp(FIREBASE_CONFIG);
+    const db = fsMod.initializeFirestore(app, {experimentalAutoDetectLongPolling:true});
+    sync.setDoc = fsMod.setDoc;
+    sync.ref = fsMod.doc(db, 'vaults', code);
+    fsMod.onSnapshot(sync.ref, snap=>{
+      if(snap.metadata.hasPendingWrites) return;
+      if(!snap.exists()){
+        if(snap.metadata.fromCache) return;
+        pushNow('friends'); pushNow('goals'); pushNow('cpd'); setStatus('synced'); return;
+      }
+      const d = snap.data();
+      if(!d.cpd && cpd.length) pushNow('cpd');
+      if(modalOpen()){ pendingRemote = d; }
+      else applyRemote(d);
+      setStatus(navigator.onLine ? 'synced' : 'offline');
+    }, err=>{ console.error(err); setStatus('error'); });
+    if(created) openSyncModal(true);
+  }catch(e){
+    console.error(e); setStatus('error');
+  }
+}
+window.addEventListener('offline',()=>{ if(sync.ref) setStatus('offline'); });
+window.addEventListener('online',()=>{ if(sync.ref) setStatus('connecting'); });
+
+/* ---------- 同步視窗 ---------- */
+function wireClose(){
+  $('#mbg').addEventListener('click',e=>{ if(e.target.id==='mbg') closeModal(); });
+  $('#mclose').onclick = closeModal;
+  $('#modalRoot .modal').addEventListener('click',e=>e.stopPropagation());
+}
+async function copyText(text, inputEl){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    if(inputEl){ inputEl.select(); try{ return document.execCommand('copy'); }catch(_){} }
+    return false;
+  }
+}
+function openSyncModal(first){
+  const root = $('#modalRoot');
+  const link = location.href.split('#')[0] + (sync.code ? '#c='+sync.code : '');
+  root.innerHTML = `
+  <div class="mbg" id="mbg"><div class="modal" style="--c:var(--plum)">
+    <div class="top"><div><h3>雲端同步</h3><div class="meta">狀態：${STATUS_TEXT[sync.status]}</div></div><button class="close" id="mclose">×</button></div>
+    ${!FIREBASE_CONFIG ? `
+      <div class="plain">未設定 Firebase，所以資料只儲存喺呢部機嘅 browser。<br>
+      將 firebaseConfig 貼入 index.html 最上面嗰行 <b>FIREBASE_CONFIG</b>，重新上傳之後就會自動同步。</div>
+    ` : `
+      <div class="plain">${first?'已經幫你建立咗一個新嘅同步碼。':''}喺其他裝置開下面條連結，或者輸入同步碼，就會睇到同一份資料。</div>
+      <div class="field"><label>同步碼</label><input id="syncCode" readonly value="${escA(sync.code||'')}"></div>
+      <div class="srow">
+        <button class="btn" id="copyLink">複製連結（含同步碼）</button>
+        <button class="btn ghost" id="copyCode">只複製同步碼</button>
+      </div>
+      <div id="copyMsg" class="plain" style="margin:0"></div>
+      <div class="warn">知道呢條連結或者同步碼嘅人，都可以睇到同改你嘅資料，唔好公開 share。用呢條連結加書籤或者加入 iPhone 主畫面，就唔使再輸入。</div>
+      <hr class="sep">
+      <div class="field"><label>用另一個同步碼（例如喺新裝置貼上舊裝置嘅）</label><input id="otherCode" type="text" placeholder="貼上同步碼" autocomplete="off"></div>
+      <div id="switchMsg" class="plain" style="margin:0 0 8px"></div>
+      <button class="btn ghost" id="useCode">切換到呢個同步碼</button>
+    `}
+  </div></div>`;
+  wireClose();
+  if(!FIREBASE_CONFIG) return;
+  $('#copyLink').onclick = async()=>{ $('#copyMsg').textContent = (await copyText(link, $('#syncCode'))) ? '已複製連結。' : '複製唔到，請手動揀同步碼複製。'; };
+  $('#copyCode').onclick = async()=>{ $('#copyMsg').textContent = (await copyText(sync.code, $('#syncCode'))) ? '已複製同步碼。' : '複製唔到，請手動揀同步碼複製。'; };
+  $('#useCode').onclick = ()=>{
+    const v = $('#otherCode').value.trim();
+    if(!CODE_RE.test(v)){ $('#switchMsg').textContent = '同步碼格式唔啱（應該係 16 至 64 個英文字母或數字）。'; return; }
+    try{ localStorage.setItem(LS_CODE, v); }catch(e){}
+    location.hash = 'c='+v;
+    location.reload();
+  };
+}
+$('#syncChip').addEventListener('click',()=>openSyncModal(false));
+
+/* =====================================================================
+   約朋友
+   ===================================================================== */
+let friends = lsGet(LS_F, []);
+function saveFriends(){ lsSet(LS_F, friends); push('friends'); }
+
+const CAT_DEF = {light:['食飯','Coffee chat'], close:['食飯','Coffee chat','去佢屋企玩','睇戲','行山']};
+const CAT_LABEL = {light:'淺交（食飯/Coffee）', close:'熟稔（可約活動）'};
+let lastDrawn = null;
+
+function fOverdue(f){
+  const last = new Date(f.lastMet+'T00:00:00');
+  const next = new Date(last.getTime() + f.frequencyWeeks*7*86400000);
+  return Math.round((new Date() - next)/86400000);
+}
+function fActivities(f){
+  return [...new Set([...(CAT_DEF[f.category]||[]), ...(f.customActivities||[])])];
+}
+
+function renderFriends(){
+  const box = $('#friendList');
+  if(!friends.length){ box.innerHTML = '<div class="empty">仲未有朋友資料，撳「新增朋友」開始。</div>'; return; }
+  const sorted = [...friends].sort((a,b)=>fOverdue(b)-fOverdue(a));
+  box.innerHTML = sorted.map(f=>{
+    const o = fOverdue(f);
+    const pill = o>=0 ? `<span class="pill over">遲咗 ${o} 日</span>` : `<span class="pill ok">仲有 ${-o} 日</span>`;
+    return `<div class="f-card">
+      <div class="l">
+        <div class="nm">${esc(f.name)}</div>
+        <div class="tg">${CAT_LABEL[f.category]} · 每 ${f.frequencyWeeks} 星期 · 上次見 ${esc(f.lastMet)}</div>
+      </div>
+      <div class="rt">${pill}
+        <button class="txtbtn" data-act="met" data-id="${f.id}">啱啱見咗</button>
+        <button class="txtbtn" data-act="edit" data-id="${f.id}">編輯</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function markMet(id){
+  const f = friends.find(x=>x.id===id); if(!f) return;
+  f.lastMet = ymd(new Date());
+  saveFriends(); renderFriends();
+}
+
+function drawFriend(){
+  if(!friends.length){ $('#resultBox').innerHTML = '<div class="f-result"><div class="mt">未有朋友資料，先新增一個。</div></div>'; return; }
+  let pool = friends.map(f=>({f, o:fOverdue(f)}));
+  const due = pool.filter(x=>x.o>=0);
+  if(due.length) pool = due;
+  if(pool.length>1) pool = pool.filter(x=>x.f.id!==lastDrawn);
+  const weights = pool.map(x=>Math.max(x.o,0)+1);
+  let r = Math.random()*weights.reduce((a,b)=>a+b,0);
+  let pick = pool[0];
+  for(let i=0;i<pool.length;i++){ r -= weights[i]; if(r<=0){ pick = pool[i]; break; } }
+  const f = pick.f; lastDrawn = f.id;
+  const acts = fActivities(f);
+  const act = acts[Math.floor(Math.random()*acts.length)] || '食飯';
+  const meta = pick.o>=0 ? `遲咗 ${pick.o} 日冇見` : `仲喺 ${-pick.o} 日嘅約會週期內`;
+  $('#resultBox').innerHTML = `<div class="f-result">
+    <div class="nm">${esc(f.name)}</div>
+    <div class="mt">${meta} · 建議：${esc(act)}</div>
+    <div class="acts">
+      <button class="primary" data-act="drawmet" data-id="${f.id}">已經約咗，再抽下個</button>
+      <button data-act="redraw">換一個</button>
+    </div>
+  </div>`;
+}
+
+$('#drawBtn').addEventListener('click',drawFriend);
+$('#resultBox').addEventListener('click',e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  if(b.dataset.act==='redraw') drawFriend();
+  if(b.dataset.act==='drawmet'){ markMet(b.dataset.id); drawFriend(); }
+});
+$('#friendList').addEventListener('click',e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  if(b.dataset.act==='met') markMet(b.dataset.id);
+  if(b.dataset.act==='edit') openFriendModal(b.dataset.id);
+});
+$('#addFriend').addEventListener('click',()=>openFriendModal(null));
+
+function openFriendModal(id){
+  const f = id ? friends.find(x=>x.id===id)
+               : {name:'', category:'light', frequencyWeeks:4, lastMet:ymd(new Date()), customActivities:[]};
+  if(!f) return;
+  let category = f.category, err = '', confirmDel = false;
+  const root = $('#modalRoot');
+
+  const readVals = ()=>({
+    name:$('#fName').value, acts:$('#fActs').value, freq:$('#fFreq').value, last:$('#fLast').value
+  });
+
+  function paint(v){
+    v = v || {name:f.name, acts:(f.customActivities||[]).join(', '), freq:f.frequencyWeeks, last:f.lastMet};
+    root.innerHTML = `
+    <div class="mbg" id="mbg"><div class="modal" style="--c:var(--plum)">
+      <div class="top"><div><h3>${id?'編輯朋友':'新增朋友'}</h3></div><button class="close" id="mclose">×</button></div>
+      ${err ? `<div class="warn">${esc(err)}</div>` : ''}
+      <div class="field"><label>名</label><input id="fName" type="text" value="${escA(v.name)}" placeholder="例如：阿明" autocomplete="off"></div>
+      <div class="field"><label>關係</label>
+        <div class="seg">
+          <button type="button" data-cat="light" class="${category==='light'?'on':''}">淺交（食飯/Coffee）</button>
+          <button type="button" data-cat="close" class="${category==='close'?'on':''}">熟稔（可約活動）</button>
+        </div>
+      </div>
+      <div class="field"><label>自訂活動（用逗號分開，例如：去佢屋企玩貓, 打波）</label><input id="fActs" type="text" value="${escA(v.acts)}" placeholder="唔填就用返關係嘅預設活動"></div>
+      <div class="field"><label>大約幾耐約一次（星期）</label><input id="fFreq" type="number" min="1" value="${escA(String(v.freq))}"></div>
+      <div class="field"><label>上次見面日期</label><input id="fLast" type="date" value="${escA(v.last)}"></div>
+      <div class="macts">
+        <div>${id ? (confirmDel
+          ? `<span class="cf">確定刪除？</span><button class="dangerbtn" id="fDelYes">刪除</button> <button class="txtbtn" id="fDelNo">取消</button>`
+          : `<button class="txtbtn danger" id="fDel">刪除</button>`) : ''}</div>
+        <div class="r"><button class="btn ghost" id="fCancel">取消</button><button class="btn" id="fSave">儲存</button></div>
+      </div>
+    </div></div>`;
+    wireClose();
+    $$('#modalRoot .seg button').forEach(b=>b.addEventListener('click',()=>{
+      category = b.dataset.cat;
+      $$('#modalRoot .seg button').forEach(x=>x.classList.toggle('on', x===b));
+    }));
+    $('#fCancel').onclick = closeModal;
+    $('#fSave').onclick = ()=>{
+      const val = readVals();
+      const name = val.name.trim();
+      if(!name){ err = '請輸入名。'; paint(val); return; }
+      const acts = val.acts.split(/[,，]/).map(s=>s.trim()).filter(Boolean);
+      const freq = Math.max(1, parseInt(val.freq) || 4);
+      const last = val.last || ymd(new Date());
+      if(id){ Object.assign(f, {name, category, customActivities:acts, frequencyWeeks:freq, lastMet:last}); }
+      else friends.push({id:uid(), name, category, customActivities:acts, frequencyWeeks:freq, lastMet:last});
+      saveFriends(); closeModal();
+    };
+    const d1 = $('#fDel'); if(d1) d1.onclick = ()=>{ const val = readVals(); confirmDel = true; paint(val); };
+    const d2 = $('#fDelNo'); if(d2) d2.onclick = ()=>{ const val = readVals(); confirmDel = false; paint(val); };
+    const d3 = $('#fDelYes'); if(d3) d3.onclick = ()=>{
+      friends = friends.filter(x=>x.id!==id);
+      if(lastDrawn===id) lastDrawn = null;
+      saveFriends(); closeModal();
+    };
+    if(!id && !v.name) $('#fName').focus();
+  }
+  paint();
+}
+
+/* =====================================================================
+   目標環
+   ===================================================================== */
+const LIM = {day:2, week:1, month:1};
+const SLOT_NAME = {day:'今日', week:'本週', month:'本月'};
+
+function curKey(type){
+  const d = new Date();
+  if(type==='day') return ymd(d);
+  if(type==='month') return ymd(d).slice(0,7);
+  const m = new Date(d); m.setDate(m.getDate() - ((m.getDay()+6)%7)); // 星期一
+  return ymd(m);
+}
+const mkTask = (text,done)=>({id:uid(),text,done:!!done,created:new Date().toISOString(),doneAt:done?new Date().toISOString():null,slot:null});
+
+function seed(){
+  return {
+    cats:[
+      {id:'sport', name:'運動', color:'#C0453A'},
+      {id:'eng',   name:'工程知識', color:'#3B6EA5'},
+      {id:'music', name:'音樂學習', color:'#D98A2B'}
+    ],
+    goals:[
+      {id:'g1', name:'每週運動 3 次', cat:'sport', mode:'auto', progress:0, exploring:false,
+        tasks:[mkTask('訂好每週運動日',true), mkTask('完成第 1 星期',true), mkTask('完成第 2 星期',false), mkTask('完成第 3 星期',false)]},
+      {id:'g2', name:'工程考試溫書', cat:'eng', mode:'auto', progress:0, exploring:false,
+        tasks:[mkTask('整理筆記大綱',true), mkTask('溫第 1 章',false), mkTask('做 past paper',false)]},
+      {id:'g3', name:'學識一首新歌', cat:'music', mode:'auto', progress:0, exploring:true,
+        tasks:[mkTask('揀歌',true)]}
+    ]
+  };
+}
+function migrate(s){
+  s.cats = s.cats || [];
+  s.goals = s.goals || [];
+  s.goals.forEach(g=>{
+    g.tasks = g.tasks || [];
+    if(!g.mode) g.mode = g.tasks.length ? 'auto' : 'manual';
+    if(g.exploring===undefined) g.exploring = false;
+    if(g.progress===undefined) g.progress = 0;
+    g.tasks.forEach(t=>{ if(t.slot===undefined) t.slot = null; });
+  });
+  return s;
+}
+
+let state = migrate(lsGet(LS_G, null) || seed());
+function save(){ lsSet(LS_G, state); push('goals'); }
+
+let focus = null;        // 環／類別 hover 焦點
+let pendingDel = null;   // 等緊確認刪除嘅目標
+let openId = null;       // 開住 sub-task 視窗嘅目標
+let pickerType = null;   // 開住「揀 sub-task」視窗
+let modalMsg = '';
+let staleNotice = 0;
+
+function expireSlots(){
+  let n = 0;
+  state.goals.forEach(g=>g.tasks.forEach(t=>{
+    if(t.slot && t.slot.key !== curKey(t.slot.type)){
+      if(!t.done) n++;
+      t.slot = null;
+    }
+  }));
+  if(n) lsSet(LS_G, state);
+  return n;
+}
+staleNotice = expireSlots();
+
+const cat = id => state.cats.find(c=>c.id===id) || {name:'?',color:'#999'};
+const doneN = g => g.tasks.filter(t=>t.done).length;
+function pct(g){
+  if(g.mode==='manual') return g.progress;
+  return g.tasks.length ? Math.round(doneN(g)/g.tasks.length*100) : 0;
+}
+const counted = arr => arr.filter(g=>!g.exploring);
+const avg = arr => { const a = counted(arr); return a.length ? Math.round(a.reduce((s,g)=>s+pct(g),0)/a.length) : 0; };
+const sortedGoals = ()=>{
+  const order = state.cats.map(c=>c.id);
+  return [...state.goals].sort((a,b)=>order.indexOf(a.cat)-order.indexOf(b.cat));
+};
+
+function slotTasks(type){
+  const out = [];
+  state.goals.forEach(g=>g.tasks.forEach(t=>{
+    if(t.slot && t.slot.type===type && t.slot.key===curKey(type)) out.push({g,t});
+  }));
+  return out;
+}
+function slotTypeOf(t){ return (t.slot && t.slot.key===curKey(t.slot.type)) ? t.slot.type : ''; }
+function assign(gid,tid,type){
+  const g = state.goals.find(x=>x.id===gid); if(!g) return false;
+  const t = g.tasks.find(x=>x.id===tid); if(!t) return false;
+  if(!type){ t.slot = null; save(); return true; }
+  const used = slotTasks(type).filter(x=>x.t.id!==tid).length;
+  if(used >= LIM[type]) return false;
+  t.slot = {type, key:curKey(type)};
+  save(); return true;
+}
+function toggleTask(gid,tid,checked){
+  const g = state.goals.find(x=>x.id===gid); const t = g && g.tasks.find(x=>x.id===tid);
+  if(!t) return;
+  t.done = checked;
+  t.doneAt = checked ? new Date().toISOString() : null;
+  save();
+}
+
+/* ---------- 環 ---------- */
+function renderRings(){
+  const svg = $('#rings');
+  const gs = sortedGoals();
+  const n = gs.length;
+  const outer = 185, inner = 64;
+  const step = n ? Math.min(30,(outer-inner)/n) : 30;
+  const sw = step*0.62;
+  const swh = Math.min(step*0.96, sw*1.6);
+  svg.innerHTML = gs.map((g,i)=>{
+    const r = outer - i*step;
+    const C = 2*Math.PI*r;
+    const p = pct(g);
+    return `<g class="ring ${g.exploring?'explore':''}" data-id="${g.id}" style="--sw:${sw};--swh:${swh};--hit:${step}">
+      <circle class="track" cx="200" cy="200" r="${r}"/>
+      <circle class="arc" cx="200" cy="200" r="${r}" stroke="${cat(g.cat).color}"
+        stroke-dasharray="${C*p/100} ${C}" stroke-opacity="${p>0?1:0}" transform="rotate(-90 200 200)"/>
+      <circle class="hit" cx="200" cy="200" r="${r}"/>
+    </g>`;
+  }).join('');
+  svg.querySelectorAll('.ring').forEach(el=>{
+    el.addEventListener('mouseenter',()=>setFocus({type:'goal',id:el.dataset.id}));
+    el.addEventListener('mouseleave',()=>setFocus(null));
+    el.addEventListener('click',e=>{e.stopPropagation();openGoal(el.dataset.id);});
+  });
+  applyFocus();
+}
+
+function setFocus(f){ focus = f; applyFocus(); }
+function applyFocus(){
+  $$('.ring').forEach(el=>{
+    const g = state.goals.find(x=>x.id===el.dataset.id);
+    let on=false, dim=false;
+    if(focus){
+      if(focus.type==='goal'){ on = !!g && g.id===focus.id; dim = !on; }
+      else { on = !!g && g.cat===focus.id; dim = !on; }
+    }
+    el.classList.toggle('focus',on);
+    el.classList.toggle('dim',dim);
+  });
+  $$('.row').forEach(el=>{
+    el.classList.toggle('focus', !!focus && focus.type==='goal' && el.dataset.id===focus.id);
+  });
+  renderCenter();
+}
+function renderCenter(){
+  const c = $('#center');
+  if(focus && focus.type==='goal'){
+    const g = state.goals.find(x=>x.id===focus.id);
+    if(g){
+      const k = cat(g.cat);
+      c.innerHTML = g.exploring
+        ? `<div class="cat" style="color:${k.color}">${esc(k.name)} · 探索中</div>
+           <div class="pct big" style="color:${k.color}">${doneN(g)}項</div>
+           <div class="nm">${esc(g.name)}<br>大綱未定，未計 %</div>`
+        : `<div class="cat" style="color:${k.color}">${esc(k.name)}</div>
+           <div class="pct big" style="color:${k.color}">${pct(g)}%</div>
+           <div class="nm">${esc(g.name)}</div>`;
+      return;
+    }
+  }
+  if(focus && focus.type==='cat'){
+    const k = cat(focus.id);
+    const gs = state.goals.filter(g=>g.cat===focus.id);
+    c.innerHTML = `<div class="cat" style="color:${k.color}">${esc(k.name)}</div>
+      <div class="pct big" style="color:${k.color}">${counted(gs).length?avg(gs)+'%':'–'}</div>
+      <div class="nm">${gs.length} 個目標平均</div>`;
+    return;
+  }
+  c.innerHTML = `<div class="cat">&nbsp;</div><div class="pct">${avg(state.goals)}%</div><div class="nm">整體完成度</div>`;
+}
+
+function renderLegend(){
+  const lg = $('#legend');
+  lg.innerHTML = state.cats.map(k=>{
+    const gs = state.goals.filter(g=>g.cat===k.id);
+    return `<div class="chip" data-id="${k.id}"><i style="background:${k.color}"></i>${esc(k.name)} <b>${counted(gs).length?avg(gs)+'%':'–'}</b></div>`;
+  }).join('') + `<div class="chip add" id="addCat">+ 類別</div>`;
+  lg.querySelectorAll('.chip[data-id]').forEach(el=>{
+    el.addEventListener('mouseenter',()=>setFocus({type:'cat',id:el.dataset.id}));
+    el.addEventListener('mouseleave',()=>setFocus(null));
+  });
+  $('#addCat').onclick = e=>{
+    e.stopPropagation();
+    $('#catForm').style.display='flex';
+    $('#cName').focus();
+  };
+  const sel = $('#gCat');
+  const keep = sel.value;
+  sel.innerHTML = state.cats.map(k=>`<option value="${k.id}">${esc(k.name)}</option>`).join('');
+  if(keep) sel.value = keep;
+}
+
+function renderList(){
+  const box = $('#list');
+  if(!state.goals.length){ box.innerHTML='<div class="empty">仲未有目標，喺上面新增一個。</div>'; return; }
+  box.innerHTML = state.cats.map(k=>{
+    const gs = state.goals.filter(g=>g.cat===k.id);
+    if(!gs.length) return '';
+    return `<div class="group">
+      <div class="ghead"><span>${esc(k.name)}</span><span>${counted(gs).length?'平均 '+avg(gs)+'%':''}</span></div>
+      ${gs.map(g=>{
+        const p = pct(g);
+        const right = pendingDel===g.id
+          ? `<span class="cf">刪除？</span><button class="yes">確定</button><button class="no">取消</button>`
+          : `${g.mode==='manual' ? `<input type="range" min="0" max="100" value="${g.progress}">` : `<div class="bar2"><i style="width:${p}%"></i></div>`}
+             <span class="pv">${g.exploring ? doneN(g)+'項' : p+'%'}</span>
+             <button class="x" title="刪除">×</button>`;
+        return `<div class="row" data-id="${g.id}" style="--c:${k.color}">
+          <span class="dot" style="background:${k.color}"></span>
+          <span class="gname" title="撳開睇 sub-task">${esc(g.name)}${g.tasks.length?`<span class="cnt">${doneN(g)}/${g.tasks.length}</span>`:''}${g.exploring?'<span class="tag">探索中</span>':''}</span>
+          ${right}
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+
+  box.querySelectorAll('.row').forEach(row=>{
+    const id = row.dataset.id;
+    row.addEventListener('mouseenter',()=>setFocus({type:'goal',id}));
+    row.addEventListener('mouseleave',()=>setFocus(null));
+    row.addEventListener('click',()=>setFocus({type:'goal',id}));
+    row.querySelector('.gname').addEventListener('click',e=>{e.stopPropagation();openGoal(id);});
+
+    const rng = row.querySelector('input[type=range]');
+    if(rng){
+      rng.addEventListener('click',e=>e.stopPropagation());
+      rng.addEventListener('input',()=>{
+        const g = state.goals.find(x=>x.id===id);
+        g.progress = parseInt(rng.value);
+        row.querySelector('.pv').textContent = g.progress+'%';
+        renderRings(); setFocus({type:'goal',id});
+      });
+      rng.addEventListener('change',()=>{ save(); renderLegend(); renderList(); });
+    }
+    const x = row.querySelector('.x');
+    if(x) x.addEventListener('click',e=>{ e.stopPropagation(); pendingDel = id; renderList(); });
+    const yes = row.querySelector('.yes');
+    if(yes) yes.addEventListener('click',e=>{
+      e.stopPropagation();
+      state.goals = state.goals.filter(g=>g.id!==id);
+      pendingDel = null; focus = null; save(); refreshBackground();
+    });
+    const no = row.querySelector('.no');
+    if(no) no.addEventListener('click',e=>{ e.stopPropagation(); pendingDel = null; renderList(); });
+  });
+}
+
+function renderFocusPanel(){
+  const box = $('#focusPanel');
+  const cols = ['day','week','month'].map(type=>{
+    const items = slotTasks(type);
+    const d = items.filter(x=>x.t.done).length;
+    return `<div class="fcol">
+      <div class="fh"><span>${SLOT_NAME[type]}焦點</span><b>${d}/${LIM[type]}</b></div>
+      ${items.map(({g,t})=>`
+        <label class="fitem ${t.done?'done':''}" style="--c:${cat(g.cat).color}">
+          <input type="checkbox" data-g="${g.id}" data-t="${t.id}" ${t.done?'checked':''}>
+          <span class="ftx">${esc(t.text)}<small>${esc(g.name)}</small></span>
+        </label>`).join('')}
+      ${items.length<LIM[type] ? `<button class="fadd" data-type="${type}">+ 揀 sub-task</button>` : ''}
+    </div>`;
+  }).join('');
+  box.innerHTML = `
+    <h2 class="ttl">而家集中做</h2>
+    <div class="hintline">每日 2 件短期、每週 1 件中期、每月 1 件長期目標嘅 sub-task。排滿咗就要先完成先可以揀新嘅。</div>
+    ${staleNotice ? `<div class="notice"><span>有 ${staleNotice} 個之前排咗但未完成嘅 sub-task，已放返落池，可以重新揀。</span><button id="dismissStale">知道</button></div>` : ''}
+    <div class="fgrid">${cols}</div>`;
+  box.querySelectorAll('.fitem input').forEach(inp=>{
+    inp.addEventListener('change',()=>{ toggleTask(inp.dataset.g, inp.dataset.t, inp.checked); refresh(''); });
+  });
+  box.querySelectorAll('.fadd').forEach(b=>{
+    b.addEventListener('click',e=>{ e.stopPropagation(); openPicker(b.dataset.type); });
+  });
+  const ds = $('#dismissStale');
+  if(ds) ds.onclick = ()=>{ staleNotice = 0; renderFocusPanel(); };
+}
+
+function refreshBackground(){ renderLegend(); renderRings(); renderList(); renderFocusPanel(); renderCenter(); }
+function renderAllViews(){ refreshBackground(); renderFriends(); if(typeof renderCpd==='function' && document.getElementById('cpdTable')) renderCpd(); }
+function refresh(draft){
+  refreshBackground();
+  if(openId || pickerType) renderModal(draft||'');
+}
+
+/* ---------- 視窗：目標 sub-task ---------- */
+function openGoal(id){ openId = id; pickerType = null; renderModal('', true); }
+function openPicker(type){ pickerType = type; openId = null; renderModal(''); }
+function closeModal(){
+  openId = null; pickerType = null; modalMsg = '';
+  $('#modalRoot').innerHTML = '';
+  focus = null;
+  if(pendingRemote){ const d = pendingRemote; pendingRemote = null; applyRemote(d); }
+  renderAllViews();
+}
+
+function renderModal(draft, first){
+  if(pickerType){ renderPicker(); return; }
+  const root = $('#modalRoot');
+  const g = state.goals.find(x=>x.id===openId);
+  if(!g){ closeModal(); return; }
+  const k = cat(g.cat), d = doneN(g), n = g.tasks.length;
+  const msg = modalMsg; modalMsg = '';
+  const list = [...g.tasks].reverse();
+
+  root.innerHTML = `
+  <div class="mbg" id="mbg">
+    <div class="modal" style="--c:${k.color}">
+      <div class="top">
+        <div>
+          <h3>${esc(g.name)}</h3>
+          <div class="meta"><b>${esc(k.name)}</b> · ${g.exploring?`探索中 · 已完成 ${d} 項`:`完成度 ${pct(g)}%`} · Sub-task ${d}/${n}</div>
+        </div>
+        <button class="close" id="mclose" title="關閉">×</button>
+      </div>
+
+      <div class="opts">
+        <div class="seg">
+          <button type="button" data-mode="auto" class="${g.mode==='auto'?'on':''}">自動（按 sub-task 計）</button>
+          <button type="button" data-mode="manual" class="${g.mode==='manual'?'on':''}">手動拉 %</button>
+        </div>
+        ${g.mode==='manual' ? `<div class="mrow"><input type="range" id="mRange" min="0" max="100" value="${g.progress}"><span id="mPv">${g.progress}%</span></div>` : ''}
+        <label class="chk"><input type="checkbox" id="mExplore" ${g.exploring?'checked':''}> 大綱未定（仲喺 brainstorm）</label>
+        ${g.exploring ? `<div class="hint">未知總共有幾多步，所以呢個目標唔計入整體完成度，環會用虛線底，只記已完成項數。大綱清晰咗，取消剔，%就會開始計。</div>` : ''}
+      </div>
+
+      <form class="mt-add" id="taskForm">
+        <input type="text" id="tText" placeholder="新增 sub-task，例如：睇完第 3 章" autocomplete="off">
+        <button type="submit">新增</button>
+      </form>
+      ${msg ? `<div class="warn">${esc(msg)}</div>` : ''}
+      ${list.length ? list.map(t=>`
+        <div class="task ${t.done?'done':''}" data-tid="${t.id}">
+          <input type="checkbox" ${t.done?'checked':''}>
+          <div class="body">
+            <div class="tx">${esc(t.text)}</div>
+            <div class="ts">記錄於 ${fmt(t.created)}${t.done&&t.doneAt?` · 完成於 ${fmt(t.doneAt)}`:''}</div>
+          </div>
+          ${t.done ? '' : `<select title="排入焦點">
+            <option value="" ${slotTypeOf(t)===''?'selected':''}>未排</option>
+            <option value="day" ${slotTypeOf(t)==='day'?'selected':''}>今日</option>
+            <option value="week" ${slotTypeOf(t)==='week'?'selected':''}>本週</option>
+            <option value="month" ${slotTypeOf(t)==='month'?'selected':''}>本月</option>
+          </select>`}
+          <button class="del" title="刪除">×</button>
+        </div>`).join('') : '<div class="mt-empty">未有 sub-task，喺上面寫低第一個。大綱未完整都冇問題，諗到幾多寫幾多。</div>'}
+    </div>
+  </div>`;
+
+  const input = $('#tText');
+  input.value = draft || '';
+  if(first) input.focus();
+  wireClose();
+
+  $$('#modalRoot .seg button').forEach(b=>b.addEventListener('click',()=>{
+    g.mode = b.dataset.mode; save(); refresh(input.value);
+  }));
+  const rng = $('#mRange');
+  if(rng){
+    rng.addEventListener('input',()=>{
+      g.progress = parseInt(rng.value);
+      $('#mPv').textContent = g.progress+'%';
+      renderRings(); renderLegend(); renderList();
+    });
+    rng.addEventListener('change',()=>{ save(); refresh(input.value); });
+  }
+  $('#mExplore').addEventListener('change',e=>{
+    g.exploring = e.target.checked; save(); refresh(input.value);
+  });
+
+  $('#taskForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const text = input.value.trim();
+    if(!text) return;
+    g.tasks.push(mkTask(text,false));
+    save(); refresh('');
+  });
+
+  $$('#modalRoot .task').forEach(el=>{
+    const t = g.tasks.find(x=>x.id===el.dataset.tid);
+    el.querySelector('input[type=checkbox]').addEventListener('change',e=>{
+      toggleTask(g.id, t.id, e.target.checked); refresh(input.value);
+    });
+    const sel = el.querySelector('select');
+    if(sel) sel.addEventListener('change',()=>{
+      const type = sel.value;
+      if(!assign(g.id, t.id, type)) modalMsg = `${SLOT_NAME[type]}已經排滿 ${LIM[type]} 個，要先完成或者移走一個。`;
+      refresh(input.value);
+    });
+    el.querySelector('.del').addEventListener('click',()=>{
+      g.tasks = g.tasks.filter(x=>x.id!==t.id);
+      save(); refresh(input.value);
+    });
+  });
+}
+
+function renderPicker(){
+  const root = $('#modalRoot');
+  const type = pickerType;
+  const msg = modalMsg; modalMsg = '';
+  const groups = state.goals.map(g=>({g, ts:g.tasks.filter(t=>!t.done && slotTypeOf(t)==='')})).filter(x=>x.ts.length);
+  root.innerHTML = `
+  <div class="mbg" id="mbg">
+    <div class="modal" style="--c:var(--plum)">
+      <div class="top">
+        <div>
+          <h3>揀入${SLOT_NAME[type]}焦點</h3>
+          <div class="meta">已排 ${slotTasks(type).length}/${LIM[type]} · 撳一個 sub-task 就會放入去</div>
+        </div>
+        <button class="close" id="mclose" title="關閉">×</button>
+      </div>
+      ${msg ? `<div class="warn">${esc(msg)}</div>` : ''}
+      ${groups.length ? groups.map(({g,ts})=>`
+        <div class="pgroup">
+          <div class="gh"><i style="background:${cat(g.cat).color}"></i>${esc(g.name)}</div>
+          ${ts.map(t=>`<button class="pick" data-g="${g.id}" data-t="${t.id}">${esc(t.text)}</button>`).join('')}
+        </div>`).join('') : '<div class="mt-empty">未有可以揀嘅 sub-task。先撳目標，寫低 sub-task。</div>'}
+    </div>
+  </div>`;
+  wireClose();
+  $$('#modalRoot .pick').forEach(b=>b.addEventListener('click',()=>{
+    if(assign(b.dataset.g, b.dataset.t, type)) closeModal();
+    else { modalMsg = `${SLOT_NAME[type]}已經排滿 ${LIM[type]} 個。`; renderPicker(); }
+  }));
+}
+
+/* ---------- 新增目標／類別 ---------- */
+$('#goalForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name = $('#gName').value.trim();
+  if(!name) return;
+  state.goals.push({id:uid(), name, cat:$('#gCat').value, mode:'auto', progress:0, exploring:false, tasks:[]});
+  $('#gName').value='';
+  save(); refreshBackground();
+});
+$('#catForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name = $('#cName').value.trim();
+  if(!name) return;
+  state.cats.push({id:uid(), name, color:$('#cColor').value});
+  $('#cName').value='';
+  $('#catForm').style.display='none';
+  save(); refreshBackground();
+});
+$('#cCancel').onclick = ()=>{ $('#catForm').style.display='none'; };
+
+document.addEventListener('click',()=>{
+  if(focus) setFocus(null);
+  if(pendingDel){ pendingDel = null; renderList(); }
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && modalOpen()) closeModal(); });
+
+/* =====================================================================
+   CPD 記錄
+   ===================================================================== */
+let cpd = lsGet(LS_C, []);
+if(!Array.isArray(cpd)) cpd = [];
+function saveCpd(){ lsSet(LS_C, cpd); push('cpd'); }
+
+let cpdFrom = '', cpdTo = '', cpdPendingDel = null;
+const roundH = n => Math.round(n*100)/100;
+const fmtH = n => String(roundH(n));
+
+function cpdFiltered(){
+  const from = cpdFrom, to = cpdTo;
+  if(from && to && from > to) return null; // 範圍反咗
+  return cpd.filter(r => (!from || r.date >= from) && (!to || r.date <= to))
+            .sort((a,b)=> b.date.localeCompare(a.date) || (b.created||'').localeCompare(a.created||''));
+}
+
+function renderCpd(){
+  const sumBox = $('#cpdSummary'), tbl = $('#cpdTable');
+  const rows = cpdFiltered();
+  const allTotal = roundH(cpd.reduce((s,r)=>s+r.hours,0));
+  const filtering = !!(cpdFrom || cpdTo);
+
+  if(rows === null){
+    sumBox.innerHTML = '<div class="cpd-msg">開始日期遲過結束日期，請對調。</div>';
+    tbl.innerHTML = '';
+    return;
+  }
+  const total = roundH(rows.reduce((s,r)=>s+r.hours,0));
+  const rangeText = filtering
+    ? `${cpdFrom || '最早'} 至 ${cpdTo || '今日以後'}`
+    : '全部記錄';
+  sumBox.innerHTML = `<div class="cpd-sum">
+    <div class="big">${fmtH(total)}<small>小時</small></div>
+    <div class="sub2">${esc(rangeText)}<br>${rows.length} 項${filtering ? ` · 全部共 ${fmtH(allTotal)} 小時（${cpd.length} 項）` : ''}</div>
+  </div>`;
+
+  if(!rows.length){
+    tbl.innerHTML = `<div class="empty">${cpd.length ? '呢個日期範圍內冇記錄。' : '仲未有 CPD 記錄，喺上面新增第一項。'}</div>`;
+    return;
+  }
+  tbl.innerHTML = `<table class="cpd">
+    <thead><tr><th>日期</th><th>CPD 名稱</th><th class="h">小時</th><th></th></tr></thead>
+    <tbody>${rows.map(r=>`
+      <tr data-id="${r.id}">
+        <td class="d">${esc(r.date)}</td>
+        <td class="n">${esc(r.name)}</td>
+        <td class="h">${fmtH(r.hours)}</td>
+        <td class="a">${cpdPendingDel===r.id
+          ? `<button class="cpd-yes" data-act="cdelyes">確定刪除</button> <button class="txtbtn" data-act="cdelno">取消</button>`
+          : `<button class="txtbtn" data-act="cedit">編輯</button> <button class="txtbtn danger" data-act="cdel">刪除</button>`}</td>
+      </tr>`).join('')}
+    </tbody>
+    <tfoot><tr><td></td><td>總時長${filtering?'（範圍內）':''}</td><td class="h">${fmtH(total)}</td><td></td></tr></tfoot>
+  </table>`;
+}
+
+function parseHours(v){
+  const n = parseFloat(String(v).trim());
+  return (isFinite(n) && n > 0 && n <= 1000) ? n : null;
+}
+function setCpdMsg(t){ const m = $('#cpdMsg'); m.textContent = t || ''; m.hidden = !t; }
+
+$('#cpdForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name = $('#cName2').value.trim();
+  const hours = parseHours($('#cHours').value);
+  const date = $('#cDate').value || ymd(new Date());
+  if(!name){ setCpdMsg('請輸入 CPD 名稱。'); return; }
+  if(hours === null){ setCpdMsg('請輸入大於 0 嘅時長（小時），例如 1.5。'); return; }
+  setCpdMsg('');
+  cpd.push({id:uid(), name, hours, date, created:new Date().toISOString()});
+  saveCpd();
+  $('#cName2').value=''; $('#cHours').value=''; $('#cDate').value='';
+  $('#cName2').focus();
+  renderCpd();
+});
+
+function readRange(){ cpdFrom = $('#cFrom').value; cpdTo = $('#cTo').value; cpdPendingDel = null; renderCpd(); }
+$('#cFrom').addEventListener('change',readRange);
+$('#cTo').addEventListener('change',readRange);
+$('#cYear').addEventListener('click',()=>{
+  const y = new Date().getFullYear();
+  $('#cFrom').value = `${y}-01-01`; $('#cTo').value = `${y}-12-31`; readRange();
+});
+$('#cAll').addEventListener('click',()=>{ $('#cFrom').value=''; $('#cTo').value=''; readRange(); });
+
+$('#cpdTable').addEventListener('click',e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const id = b.closest('tr').dataset.id;
+  const act = b.dataset.act;
+  if(act==='cdel'){ cpdPendingDel = id; renderCpd(); }
+  if(act==='cdelno'){ cpdPendingDel = null; renderCpd(); }
+  if(act==='cdelyes'){ cpd = cpd.filter(r=>r.id!==id); cpdPendingDel = null; saveCpd(); renderCpd(); }
+  if(act==='cedit') openCpdModal(id);
+});
+
+function openCpdModal(id){
+  const r = cpd.find(x=>x.id===id); if(!r) return;
+  let err = '';
+  const root = $('#modalRoot');
+  function paint(v){
+    v = v || {name:r.name, hours:r.hours, date:r.date};
+    root.innerHTML = `
+    <div class="mbg" id="mbg"><div class="modal" style="--c:var(--plum)">
+      <div class="top"><div><h3>編輯 CPD</h3></div><button class="close" id="mclose">×</button></div>
+      ${err ? `<div class="warn">${esc(err)}</div>` : ''}
+      <div class="field"><label>CPD 名稱</label><input id="eName" type="text" value="${escA(v.name)}"></div>
+      <div class="field"><label>時長（小時）</label><input id="eHours" type="number" step="0.25" min="0" value="${escA(String(v.hours))}"></div>
+      <div class="field"><label>日期</label><input id="eDate" type="date" value="${escA(v.date)}"></div>
+      <div class="macts"><div></div><div class="r"><button class="btn ghost" id="eCancel">取消</button><button class="btn" id="eSave">儲存</button></div></div>
+    </div></div>`;
+    wireClose();
+    $('#eCancel').onclick = closeModal;
+    $('#eSave').onclick = ()=>{
+      const val = {name:$('#eName').value, hours:$('#eHours').value, date:$('#eDate').value};
+      const name = val.name.trim(), hours = parseHours(val.hours);
+      if(!name){ err = '請輸入 CPD 名稱。'; paint(val); return; }
+      if(hours === null){ err = '請輸入大於 0 嘅時長。'; paint(val); return; }
+      r.name = name; r.hours = hours; r.date = val.date || ymd(new Date());
+      saveCpd(); closeModal();
+    };
+  }
+  paint();
+}
+
+/* =====================================================================
+   分頁 + 啟動
+   ===================================================================== */
+function showTab(t){
+  ['friends','goals','cpd'].forEach(x=>{ $('#view-'+x).hidden = (x!==t); });
+  $$('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===t));
+  try{ localStorage.setItem(LS_TAB, t); }catch(e){}
+}
+$$('.tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+
+$('#todayStr').textContent = new Date().toLocaleDateString('zh-HK',{month:'long',day:'numeric',weekday:'long'});
+let startTab = 'friends';
+try{ const t = localStorage.getItem(LS_TAB); if(t==='goals'||t==='friends'||t==='cpd') startTab = t; }catch(e){}
+showTab(startTab);
+renderAllViews();
+initSync();
+</script>
+</body>
+</html>
