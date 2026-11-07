@@ -203,6 +203,12 @@
   .pchip small{display:block;font-size:10px;color:var(--ink-soft);}
   .tnone{font-size:12px;color:var(--ink-soft);}
   .tier.unset{--lc:#B5AE9C;--w:100%;margin-top:18px;border-style:dashed;}
+  .dpair{border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin-bottom:10px;background:#fff;font-size:13px;}
+  .dpair .dn{margin-bottom:6px;word-break:break-word;}
+  .dpair .dn b{font-size:14px;font-weight:600;}
+  .dpair .dn small{display:block;color:var(--ink-soft);font-size:12px;}
+  .dpair .da{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+  .dpair .da .btn{padding:5px 10px;font-size:12px;}
 
   /* ---------- 視窗（共用） ---------- */
   .mbg{position:fixed;inset:0;background:rgba(43,42,38,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;}
@@ -368,6 +374,7 @@
       <div class="rt">
         <button class="btn ghost" type="button" id="mapExpand">全部展開</button>
         <button class="btn ghost" type="button" id="mapCollapse">收埋到組別</button>
+        <button class="btn ghost" type="button" id="mapDup">檢查重複</button>
         <button class="btn ghost" type="button" id="mapCopy">複製大綱</button>
         <button class="btn" type="button" id="mapAsk">問 Claude</button>
       </div>
@@ -458,8 +465,9 @@ function applyRemote(d){
     if(d.goals && d.goals !== JSON.stringify(state)){
       state = migrate(JSON.parse(d.goals)); lsSet(LS_G, state); changed = true;
     }
-    if(d.eng && d.eng !== JSON.stringify(eng)){
-      eng = migrateEng(JSON.parse(d.eng)); lsSet(LS_E, eng); changed = true;
+    if(d.eng){
+      const r = migrateEng(JSON.parse(d.eng));
+      if(JSON.stringify(r) !== JSON.stringify(eng)){ eng = r; lsSet(LS_E, eng); changed = true; }
     }
   }catch(e){ console.error(e); }
   if(changed){ renderAllViews(); }
@@ -1444,6 +1452,7 @@ function migrateEng(s){
     id:n.id, text:n.text||'', parent:n.parent||null, level:n.level||'',
     note:n.note||'', star:!!n.star, check:!!n.check, created:n.created||''
   }));
+  s.ignore = Array.isArray(s.ignore) ? s.ignore : [];   // 「兩個都保留」嘅配對，唔再提示重複
   return s;
 }
 let eng = (function(){
@@ -1662,8 +1671,36 @@ function renderSug(){
       <button type="button" class="txtbtn" data-sug="${n.id}" data-as="sib">同一層</button></span>`;
   }).join('') + '</div>';
 }
-$('#kwText').addEventListener('input',renderSug);
+/* ---------- 重複檢查 ---------- */
+/* 比較時唔理大細寫、空格同常見符號，所以 Bluebeam／bluebeam／Blue beam 都當同一個 */
+const normT = s => String(s).toLowerCase().replace(/[\s\/\\,，、.。()（）\[\]&＆\-_:：;；'"’“”!?？！+=]+/g,'');
+function eDups(text, excludeId){
+  const k = normT(text); if(!k) return [];
+  return eng.nodes.filter(n=>n.id!==excludeId && normT(n.text)===k);
+}
+const pathText = n => [...ePath(n), n.text].join(' › ');
+
+let pendingKw = null;
+function addKw(text, parent, level){
+  eng.nodes.push({id:uid(), text, parent, level, note:'', star:false, check:false, created:new Date().toISOString()});
+  if(parent){ collapsed.delete(parent); saveCollapsed(); }
+  $('#kwText').value = ''; $('#kwSug').innerHTML = ''; pendingKw = null;
+  saveEng();
+  const p = parent && eGet(parent);
+  setMapMsg(`已加入「${text}」→ ${p ? p.text : '新組別'}`);
+  renderMap();
+}
+
+$('#kwText').addEventListener('input',()=>{ pendingKw = null; renderSug(); });
 $('#kwSug').addEventListener('click',e=>{
+  const dp = e.target.closest('[data-dup]');
+  if(dp){
+    const act = dp.dataset.dup;
+    if(act==='go') openNodeModal(dp.dataset.id);
+    if(act==='force' && pendingKw){ addKw(pendingKw.text, pendingKw.parent, pendingKw.level); }
+    if(act==='cancel'){ pendingKw = null; renderSug(); }
+    return;
+  }
   const b = e.target.closest('[data-sug]'); if(!b) return;
   const n = eGet(b.dataset.sug); if(!n) return;
   $('#kwParent').value = b.dataset.as==='child' ? n.id : (n.parent || '');
@@ -1674,14 +1711,82 @@ $('#kwForm').addEventListener('submit',e=>{
   if(!text) return;
   const parent = $('#kwParent').value || null;
   const level = $('#kwLevel').value;
-  eng.nodes.push({id:uid(), text, parent, level, note:'', star:false, check:false, created:new Date().toISOString()});
-  if(parent){ collapsed.delete(parent); saveCollapsed(); }
-  $('#kwText').value = ''; $('#kwSug').innerHTML = '';
-  saveEng();
-  const p = parent && eGet(parent);
-  setMapMsg(`已加入「${text}」→ ${p ? p.text : '新組別'}`);
-  renderMap();
+  const dups = eDups(text);
+  if(dups.length){
+    pendingKw = {text, parent, level};
+    $('#kwSug').innerHTML = `<div class="warn" style="margin-top:10px">「${esc(text)}」已經有：
+      ${dups.map(n=>`<b>${esc(pathText(n))}</b> <button type="button" class="txtbtn" data-dup="go" data-id="${n.id}">去睇</button>`).join('；')}
+      <div style="margin-top:8px"><button type="button" class="btn ghost" style="padding:5px 10px;font-size:12px" data-dup="force">仍然加入</button>
+      <button type="button" class="txtbtn" data-dup="cancel">取消</button></div></div>`;
+    return;
+  }
+  addKw(text, parent, level);
 });
+
+/* 「檢查重複」：列出撞名同好相似嘅配對，可以合併或者標記保留兩邊 */
+function findDupPairs(){
+  const ign = new Set(eng.ignore || []);
+  const ns = eng.nodes, out = [];
+  for(let i=0;i<ns.length;i++) for(let j=i+1;j<ns.length;j++){
+    const a = ns[i], b = ns[j];
+    const ka = normT(a.text), kb = normT(b.text);
+    if(!ka || !kb) continue;
+    let kind = '';
+    if(ka===kb) kind = 'same';
+    else{
+      /* 「可能相關」：較短嗰個要喺較長嗰個入面，由字頭開始或者喺字尾結束（cad ~ AutoCAD、arch ~ arch cleaning），
+         咁就唔會因為去咗空格而撞中（例如 folder files 入面嘅 rfi） */
+      const sp = t => ' ' + String(t).toLowerCase().replace(/[^a-z0-9一-鿿]+/g,' ').trim() + ' ';
+      const aShort = ka.length<=kb.length;
+      const s = aShort ? ka : kb, sSp = sp(aShort ? a.text : b.text).trim(), lSp = sp(aShort ? b.text : a.text);
+      if(s.length>=3 && sSp && (lSp.includes(' '+sSp) || lSp.includes(sSp+' '))) kind = 'like';
+    }
+    if(!kind) continue;
+    if(ign.has([a.id,b.id].sort().join('|'))) continue;
+    if(eDesc(a.id).includes(b.id) || eDesc(b.id).includes(a.id)) continue;   // 上下級唔當重複
+    out.push({a,b,kind});
+  }
+  return out.sort((x,y)=>(x.kind==='same'?0:1)-(y.kind==='same'?0:1)).slice(0,30);
+}
+function mergeNodes(keepId, dropId){
+  const k = eGet(keepId), d = eGet(dropId); if(!k || !d) return;
+  eKids(dropId).forEach(c=>{ c.parent = keepId; });
+  if(d.note && d.note!==k.note) k.note = k.note ? k.note+'；'+d.note : d.note;
+  if(!k.level) k.level = d.level;
+  k.star = k.star || d.star; k.check = k.check || d.check;
+  eng.nodes = eng.nodes.filter(x=>x.id!==dropId);
+}
+function openDupModal(){
+  const root = $('#modalRoot');
+  const show = n => `<div class="dn"><b>${esc(n.text)}</b><small>${esc(ePath(n).join(' › ') || '頂層組別')}${n.level?' · '+lvlOf(n.level).name:''}${n.note?' · '+esc(n.note):''}</small></div>`;
+  function paint(){
+    const pairs = findDupPairs();
+    root.innerHTML = `
+    <div class="mbg" id="mbg"><div class="modal" style="--c:var(--plum)">
+      <div class="top"><div><h3>檢查重複</h3><div class="meta">${pairs.length ? `搵到 ${pairs.length} 組` : '冇搵到重複'}</div></div><button class="close" id="mclose">×</button></div>
+      ${pairs.length ? '<div class="plain">「同名」係完全一樣；「可能相關」係其中一個名包住另一個，只係提示，請自己判斷。合併會將被合併項目嘅子項搬去保留嗰個，備註會接埋一齊。</div>'
+                     : '<div class="mt-empty">暫時冇撞名或者好相似嘅項目。</div>'}
+      ${pairs.map(p=>`<div class="dpair">
+        <span class="pill ${p.kind==='same'?'over':'ok'}">${p.kind==='same'?'同名':'可能相關'}</span>
+        <div style="margin-top:8px">${show(p.a)}${show(p.b)}</div>
+        <div class="da">
+          <button class="btn ghost" data-act="keepA" data-a="${p.a.id}" data-b="${p.b.id}">保留上面，合併下面</button>
+          <button class="btn ghost" data-act="keepB" data-a="${p.a.id}" data-b="${p.b.id}">保留下面，合併上面</button>
+          <button class="txtbtn" data-act="both" data-a="${p.a.id}" data-b="${p.b.id}">兩個都保留</button>
+        </div></div>`).join('')}
+    </div></div>`;
+    wireClose();
+    $$('#modalRoot [data-act]').forEach(b=>b.addEventListener('click',()=>{
+      const a = b.dataset.a, c = b.dataset.b;
+      if(b.dataset.act==='keepA') mergeNodes(a, c);
+      else if(b.dataset.act==='keepB') mergeNodes(c, a);
+      else eng.ignore = [...(eng.ignore||[]), [a,c].sort().join('|')];
+      saveEng(); paint();
+    }));
+  }
+  paint();
+}
+$('#mapDup').addEventListener('click',openDupModal);
 
 /* ---------- 視窗：新增／編輯項目 ---------- */
 function openNodeModal(id, presetParent){
@@ -1690,7 +1795,7 @@ function openNodeModal(id, presetParent){
     ? {id:uid(), text:'', parent:presetParent||null, level:'', note:'', star:false, check:false, created:new Date().toISOString()}
     : eGet(id);
   if(!n) return;
-  let level = n.level, err = '', confirmDel = false;
+  let level = n.level, err = '', confirmDel = false, ackNorm = null;
   const banned = isNew ? [] : [n.id, ...eDesc(n.id)];
   const color = isNew ? 'var(--plum)' : eTopColor(n);
   const root = $('#modalRoot');
@@ -1746,6 +1851,14 @@ function openNodeModal(id, presetParent){
       const val = readVals();
       const text = val.text.trim();
       if(!text){ err = '請輸入名稱。'; paint(val); return; }
+      const nk = normT(text);
+      if((isNew || nk !== normT(n.text)) && ackNorm !== nk){
+        const dups = eDups(text, n.id);
+        if(dups.length){
+          err = `已經有同名項目：${dups.map(pathText).join('；')}。如果係刻意重複，再撳一次「儲存」就會照存。`;
+          ackNorm = nk; paint(val); return;
+        }
+      }
       const parent = val.parent || null;
       const note = val.note.trim();
       if(isNew){
