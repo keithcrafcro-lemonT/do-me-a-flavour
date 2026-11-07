@@ -35,6 +35,7 @@
   .tabs{display:flex;gap:6px;margin:0 0 26px;border-bottom:1px solid var(--line);}
   .tabs button{background:none;border:none;padding:10px 16px;font-size:15px;color:var(--ink-soft);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;}
   .tabs button.on{color:var(--ink);border-bottom-color:var(--plum);font-weight:600;}
+  @media(max-width:480px){.tabs button{padding:10px 11px;font-size:14px;}}
 
   .btn{background:var(--plum);color:#fff;border:none;padding:9px 16px;border-radius:2px;font-size:14px;cursor:pointer;font-weight:600;font-family:inherit;}
   .btn.ghost{background:none;color:var(--ink-soft);border:1px solid var(--line);font-weight:400;}
@@ -158,6 +159,51 @@
   table.cpd tfoot td{font-weight:600;background:#F6F1E6;border-top:2px solid var(--line);border-bottom:none;}
   .cpd-yes{background:#A6543D;color:#fff;border:none;border-radius:2px;padding:4px 9px;font-size:12px;cursor:pointer;}
 
+  /* ---------- 工程 mind map ---------- */
+  .mapadd .r{display:flex;gap:8px;flex-wrap:wrap;}
+  .mapadd #kwText{flex:2;min-width:200px;}
+  .mapadd #kwParent{min-width:170px;}
+  .mapadd #kwLevel{flex:0 0 110px;min-width:100px;}
+  .sug{font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:2;}
+  .sugi{display:inline-block;margin-right:10px;background:#F6F1E6;border-radius:10px;padding:0 9px;}
+  .mapmsg{font-size:12px;color:var(--sage);margin-top:8px;}
+  .maptools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .maptools .seg{margin:0;}
+  .maptools .seg button{flex:none;padding:7px 14px;font-size:13px;}
+  .maptools .rt{display:flex;gap:8px;flex-wrap:wrap;}
+  .maptools .rt button{padding:6px 12px;font-size:12px;}
+  .mapscroll{overflow:auto;border:1px solid var(--line);border-radius:3px;background:var(--card);max-height:72vh;}
+  .mapcanvas{position:relative;}
+  .mapcanvas svg{position:absolute;left:0;top:0;pointer-events:none;}
+  .mapcanvas svg path{fill:none;stroke-width:1.6;opacity:.55;}
+  .mnode{position:absolute;height:30px;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gc);border-radius:3px;padding:0 8px;font-size:13px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .mnode .mtx{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+  .mnode .mtx:hover{text-decoration:underline;}
+  .mnode .mcar{cursor:pointer;color:var(--ink-soft);font-size:12px;padding:0 2px;user-select:none;white-space:nowrap;}
+  .mnode.root{background:var(--plum-deep);color:#F3EEE6;border-color:var(--plum-deep);justify-content:center;font-weight:600;}
+  .lvb{font-size:10px;font-weight:700;color:#fff;background:var(--lc);border-radius:8px;padding:1px 6px;flex:none;}
+  .chkb{font-size:10px;font-weight:700;color:#8A5A12;background:#F3E3D2;border-radius:8px;padding:1px 6px;flex:none;}
+  .outline{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:12px 14px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .ol{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #EFEADC;font-size:14px;}
+  .ol:last-child{border-bottom:none;}
+  .ol .ocar{width:16px;text-align:center;color:var(--ink-soft);cursor:pointer;user-select:none;flex:none;}
+  .ol .otx{cursor:pointer;border-left:3px solid var(--gc);padding-left:8px;word-break:break-word;}
+  .ol .otx:hover{text-decoration:underline;}
+  .ol .onote{font-size:12px;color:var(--ink-soft);word-break:break-word;}
+  .ol .oadd{margin-left:auto;background:none;border:1px solid var(--line);color:var(--ink-soft);border-radius:2px;font-size:13px;cursor:pointer;padding:0 8px;line-height:20px;flex:none;}
+  .outline .addtop{margin-top:10px;}
+  .pyr{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;}
+  .tier{width:var(--w);margin:0 auto 8px;background:var(--card);border:1px solid var(--line);border-top:4px solid var(--lc);border-radius:3px;padding:10px 12px;}
+  @media(max-width:640px){.tier{width:100%;}}
+  .tier .th{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);margin-bottom:8px;}
+  .tier .th b{color:var(--lc);font-size:14px;}
+  .tchips{display:flex;flex-wrap:wrap;gap:6px;}
+  .pchip{background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px 10px;font-size:13px;cursor:pointer;color:var(--ink);text-align:left;}
+  .pchip:hover{border-color:var(--plum);}
+  .pchip small{display:block;font-size:10px;color:var(--ink-soft);}
+  .tnone{font-size:12px;color:var(--ink-soft);}
+  .tier.unset{--lc:#B5AE9C;--w:100%;margin-top:18px;border-style:dashed;}
+
   /* ---------- 視窗（共用） ---------- */
   .mbg{position:fixed;inset:0;background:rgba(43,42,38,.5);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20;}
   .modal{background:var(--card);border-radius:4px;width:100%;max-width:500px;max-height:88vh;overflow:auto;padding:24px;border-top:4px solid var(--c);font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;animation:rise .25s ease-out;}
@@ -197,7 +243,7 @@
   .pick:hover{border-color:var(--plum);background:#FBF7EE;}
   .field{margin-bottom:14px;}
   .field label{display:block;font-size:12px;color:var(--ink-soft);margin-bottom:5px;}
-  .field input{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+  .field input,.field select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:2px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
   .macts{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px;flex-wrap:wrap;}
   .macts .r{display:flex;gap:10px;}
   .macts .cf{font-size:13px;color:#A6543D;margin-right:6px;}
@@ -221,6 +267,7 @@
     <button data-tab="friends">約朋友</button>
     <button data-tab="goals">目標</button>
     <button data-tab="cpd">CPD</button>
+    <button data-tab="map">工程</button>
   </nav>
 
   <!-- ===== 約朋友 ===== -->
@@ -293,6 +340,40 @@
     <div id="cpdSummary"></div>
     <div id="cpdTable"></div>
   </section>
+
+  <!-- ===== 工程 mind map ===== -->
+  <section id="view-map" hidden>
+    <div class="formbox mapadd">
+      <form id="kwForm" class="r" autocomplete="off">
+        <input type="text" id="kwText" placeholder="輸入新 keyword，例如：Hydronic balancing">
+        <select id="kwParent"></select>
+        <select id="kwLevel">
+          <option value="">未標 level</option>
+          <option value="junior">Junior</option>
+          <option value="mid">Mid</option>
+          <option value="senior">Senior</option>
+          <option value="lead">Lead</option>
+        </select>
+        <button class="btn" type="submit">加入</button>
+      </form>
+      <div id="kwSug"></div>
+      <div class="mapmsg" id="mapMsg"></div>
+    </div>
+    <div class="maptools">
+      <div class="seg" id="mapSeg" style="--c:var(--plum)">
+        <button type="button" data-v="map">Mind map</button>
+        <button type="button" data-v="outline">大綱</button>
+        <button type="button" data-v="pyramid">金字塔</button>
+      </div>
+      <div class="rt">
+        <button class="btn ghost" type="button" id="mapExpand">全部展開</button>
+        <button class="btn ghost" type="button" id="mapCollapse">收埋到組別</button>
+        <button class="btn ghost" type="button" id="mapCopy">複製大綱</button>
+        <button class="btn" type="button" id="mapAsk">問 Claude</button>
+      </div>
+    </div>
+    <div id="mapBody"></div>
+  </section>
 </div>
 
 <div id="modalRoot"></div>
@@ -332,6 +413,7 @@ const modalOpen = ()=> $('#modalRoot').children.length > 0;
 const LS_F = 'jarvis_friends_v1';
 const LS_G = 'goal_rings_v1';
 const LS_C = 'jarvis_cpd_v1';
+const LS_E = 'jarvis_eng_v1';
 const LS_TAB = 'jarvis_tab';
 const LS_CODE = 'jarvis_code';
 
@@ -351,7 +433,8 @@ function setStatus(s){
 
 function pushNow(field){
   if(!sync.ref) return;
-  const payload = JSON.stringify(field==='friends' ? friends : field==='cpd' ? cpd : state);
+  const src = field==='friends' ? friends : field==='cpd' ? cpd : field==='eng' ? eng : state;
+  const payload = JSON.stringify(src);
   sync.setDoc(sync.ref, {[field]:payload, updated:Date.now()}, {merge:true})
     .then(()=>{ if(sync.status!=='offline') setStatus('synced'); })
     .catch(e=>{ console.error(e); setStatus('error'); });
@@ -374,6 +457,9 @@ function applyRemote(d){
     }
     if(d.goals && d.goals !== JSON.stringify(state)){
       state = migrate(JSON.parse(d.goals)); lsSet(LS_G, state); changed = true;
+    }
+    if(d.eng && d.eng !== JSON.stringify(eng)){
+      eng = migrateEng(JSON.parse(d.eng)); lsSet(LS_E, eng); changed = true;
     }
   }catch(e){ console.error(e); }
   if(changed){ renderAllViews(); }
@@ -417,10 +503,11 @@ async function initSync(){
       if(snap.metadata.hasPendingWrites) return;
       if(!snap.exists()){
         if(snap.metadata.fromCache) return;
-        pushNow('friends'); pushNow('goals'); pushNow('cpd'); setStatus('synced'); return;
+        pushNow('friends'); pushNow('goals'); pushNow('cpd'); pushNow('eng'); setStatus('synced'); return;
       }
       const d = snap.data();
       if(!d.cpd && cpd.length) pushNow('cpd');
+      if(!d.eng && eng.nodes.length) pushNow('eng');
       if(modalOpen()){ pendingRemote = d; }
       else applyRemote(d);
       setStatus(navigator.onLine ? 'synced' : 'offline');
@@ -914,7 +1001,11 @@ function renderFocusPanel(){
 }
 
 function refreshBackground(){ renderLegend(); renderRings(); renderList(); renderFocusPanel(); renderCenter(); }
-function renderAllViews(){ refreshBackground(); renderFriends(); if(typeof renderCpd==='function' && document.getElementById('cpdTable')) renderCpd(); }
+function renderAllViews(){
+  refreshBackground(); renderFriends();
+  if(typeof renderCpd==='function' && document.getElementById('cpdTable')) renderCpd();
+  if(typeof renderMap==='function' && document.getElementById('mapBody')) renderMap();
+}
 function refresh(draft){
   refreshBackground();
   if(openId || pickerType) renderModal(draft||'');
@@ -1215,10 +1306,478 @@ function openCpdModal(id){
 }
 
 /* =====================================================================
+   工程 mind map
+   資料係一個扁平陣列 nodes：每個節點有 id、text（你自己嘅原文）、parent（頂層係 null）、
+   level（''/junior/mid/senior/lead）、note、star、check（手寫唔肯定，待核對）。
+   ===================================================================== */
+const LEVELS = [
+  {k:'junior', name:'Junior', color:'#6F7C5C'},
+  {k:'mid',    name:'Mid',    color:'#3B6EA5'},
+  {k:'senior', name:'Senior', color:'#B8842E'},
+  {k:'lead',   name:'Lead',   color:'#6B3F55'}
+];
+const lvlOf = k => LEVELS.find(l=>l.k===k);
+const GROUP_COLORS = ['#C0453A','#3B6EA5','#D98A2B','#6F7C5C','#6B3F55','#2F8F8A','#8A6D3B','#7A4FA3'];
+const LS_EC = 'jarvis_eng_collapsed';
+const LS_EVIEW = 'jarvis_eng_view';
+
+/* 種子：照手寫筆記原文轉錄。格式：[文字, [子項], {note, star, check}] */
+const ENG_SEED = [
+  ['drawing setup',[
+    ['site plan',[],{note:'MD - site plan：出圖嘅時候要出 site plan'}],
+    ['general note'],
+    ['schematic'],
+    ['details',[],{note:'分清楚 detail：通用 / 獨特'}],
+    ['scaling'],
+    ['layout (arch cleaning)'],
+    ['section / elevation'],
+    ['drawing note'],
+    ['reference note'],
+    ['Demo hatching'],
+    ['arrow',[],{note:'旁邊寫咗「整齊性」',check:true}]
+  ],{star:true}],
+  ['contract admin',[
+    ['different contract style?'],
+    ['prime / sub-consultant']
+  ]],
+  ['Project delivery',[
+    ['methods'],
+    ['pros & cons'],
+    ['scope management']
+  ]],
+  ['Project Management',[
+    ['入門 = folder / files management']
+  ]],
+  ['Deal with',[
+    ['RFI'],
+    ['RFQ'],
+    ['changes order (CO)'],
+    ['change notes (CN)'],
+    ['shop drawing'],
+    ['calculation (technical)',[
+      ['efficiency'],
+      ['energy audit']
+    ]],
+    ['BAS control sequences']
+  ]],
+  ['Design',[
+    ['value engineering'],
+    ['code compliance design'],
+    ['spec writing'],
+    ['report writing'],
+    ['software master skill',[
+      ['CAD'],
+      ['BIM']
+    ]]
+  ]],
+  ['site visit',[
+    ['inter-people skill (soft skill)'],
+    ['ad-hoc learning & re-act'],
+    ['understanding to real-world objects'],
+    ['safety protocol']
+  ]],
+  ['QA&QC',[
+    ['code checking'],
+    ['bluebeam']
+  ]],
+  ['coordination skill',[
+    ['RCP'],
+    ['CBD / inter-face',[],{check:true}]
+  ]],
+  ['Meeting',[
+    ['meeting minute writing'],
+    ['Internal',[
+      ['corporate speaking']
+    ]],
+    ['External',[
+      ['contractor / other trade consultant'],
+      ['client',[
+        ['expectation management'],
+        ['respective speaking']
+      ]]
+    ]]
+  ]],
+  ['Other discipline knowledge',[
+    ['electrical'],
+    ['civil'],
+    ['arch']
+  ]],
+  ['Technical knowledge on system',[
+    ['HVAC',[
+      ['acoustic knowledge'],
+      ['rule of thumb']
+    ]],
+    ['PL / DR'],
+    ['FS']
+  ]],
+  ['AutoCAD',[
+    ['E-transmit']
+  ]],
+  ['Print',[
+    ['layer']
+  ]],
+  ['Document',[
+    ['AHJ / ministry document submission'],
+    ['permit getting']
+  ]],
+  ['Ethical',[
+    ['power of seal'],
+    ['conflict of interest']
+  ]],
+  ['BCxP',[],{note:'手寫入面圈咗，未有子項'}]
+];
+
+function buildSeed(){
+  const out = []; let n = 0;
+  (function add(list,parent){
+    list.forEach(it=>{
+      const id = 's'+(++n), o = it[2] || {};
+      out.push({id, text:it[0], parent, level:'', note:o.note||'', star:!!o.star, check:!!o.check, created:'2026-11-07T00:00:00.000Z'});
+      if(it[1] && it[1].length) add(it[1], id);
+    });
+  })(ENG_SEED, null);
+  return out;
+}
+function migrateEng(s){
+  s = s || {};
+  s.nodes = (Array.isArray(s.nodes) ? s.nodes : []).map(n=>({
+    id:n.id, text:n.text||'', parent:n.parent||null, level:n.level||'',
+    note:n.note||'', star:!!n.star, check:!!n.check, created:n.created||''
+  }));
+  return s;
+}
+let eng = (function(){
+  let s = lsGet(LS_E, null);
+  if(!s || !Array.isArray(s.nodes)) s = {nodes:buildSeed()};
+  return migrateEng(s);
+})();
+function saveEng(){ lsSet(LS_E, eng); push('eng'); }
+
+/* 展開／收埋同視圖係每部機自己記，唔同步 */
+let collapsed = (function(){
+  const a = lsGet(LS_EC, null);
+  if(Array.isArray(a)) return new Set(a);
+  return new Set(eng.nodes.filter(n=>!n.parent && eng.nodes.some(c=>c.parent===n.id)).map(n=>n.id));
+})();
+function saveCollapsed(){ lsSet(LS_EC, [...collapsed]); }
+let mapView = lsGet(LS_EVIEW, 'map');
+if(!['map','outline','pyramid'].includes(mapView)) mapView = 'map';
+
+const eGet = id => eng.nodes.find(n=>n.id===id);
+const eKids = id => eng.nodes.filter(n=>n.parent===id);
+function eDesc(id){
+  const out = [];
+  (function f(p){ eKids(p).forEach(k=>{ out.push(k.id); f(k.id); }); })(id);
+  return out;
+}
+function ePath(n){
+  const p = []; let c = n;
+  while(c && c.parent){ c = eGet(c.parent); if(c) p.unshift(c.text); }
+  return p;
+}
+function eTopColor(n){
+  let c = n, guard = 0;
+  while(c.parent && guard++ < 50){ const p = eGet(c.parent); if(!p) break; c = p; }
+  const i = eKids(null).findIndex(t=>t.id===c.id);
+  return GROUP_COLORS[(i<0?0:i) % GROUP_COLORS.length];
+}
+function badges(n){
+  let h = '';
+  if(n.level){ const l = lvlOf(n.level); if(l) h += `<span class="lvb" style="--lc:${l.color}" title="${l.name}">${l.name[0]}</span>`; }
+  if(n.check) h += '<span class="chkb" title="手寫唔肯定，請核對">?</span>';
+  return h;
+}
+function outlineMd(){
+  const L = [];
+  (function f(p,d){
+    eKids(p).forEach(n=>{
+      L.push('  '.repeat(d) + '- ' + n.text + (n.level ? ` [${lvlOf(n.level).name}]` : '') + (n.note ? ` — ${n.note}` : ''));
+      f(n.id, d+1);
+    });
+  })(null,0);
+  return L.join('\n');
+}
+
+/* ---------- 視圖 ---------- */
+function renderKwOptions(){
+  const sel = $('#kwParent'), keep = sel.value;
+  let h = '<option value="">＋ 新組別（頂層）</option>';
+  (function f(p,d){
+    eKids(p).forEach(n=>{ h += `<option value="${n.id}">${'　'.repeat(d)}${esc(n.text)}</option>`; f(n.id,d+1); });
+  })(null,0);
+  sel.innerHTML = h;
+  if(keep && eGet(keep)) sel.value = keep;
+}
+
+function renderMap(){
+  $$('#mapSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===mapView));
+  renderKwOptions();
+  const body = $('#mapBody');
+  if(!eKids(null).length){
+    body.innerHTML = '<div class="empty">仲未有內容，喺上面輸入第一個 keyword（揀「新組別」就會開一個頂層組別）。</div>';
+    return;
+  }
+  body.innerHTML = mapView==='map' ? mapHtml() : mapView==='outline' ? outlineHtml() : pyramidHtml();
+}
+
+function mapHtml(){
+  const COLW = 220, ROWH = 36, NW = 192, PAD = 12;
+  const recs = [], links = []; let y = 0;
+  function walk(n, depth, color){
+    const all = eKids(n.id), open = !collapsed.has(n.id);
+    const rec = {n, depth, color, all:all.length, open, cy:0};
+    const kids = open ? all : [];
+    if(!kids.length){ rec.cy = y++; }
+    else{
+      const cs = kids.map(k=>walk(k, depth+1, color));
+      rec.cy = (cs[0].cy + cs[cs.length-1].cy) / 2;
+      cs.forEach(c=>links.push([rec,c]));
+    }
+    recs.push(rec); return rec;
+  }
+  const tops = eKids(null).map((t,i)=>walk(t, 1, GROUP_COLORS[i % GROUP_COLORS.length]));
+  const root = {n:{id:'__root', text:'工程能力'}, depth:0, color:'#4E2E3E', all:tops.length, open:true,
+                cy:(tops[0].cy + tops[tops.length-1].cy)/2, isRoot:true};
+  tops.forEach(t=>links.push([root,t])); recs.push(root);
+
+  const maxDepth = Math.max(...recs.map(r=>r.depth));
+  const W = maxDepth*COLW + NW + PAD*2, H = y*ROWH + PAD*2;
+  const px = r => PAD + r.depth*COLW;
+  const py = r => PAD + r.cy*ROWH + ROWH/2;
+
+  const paths = links.map(([a,b])=>{
+    const x1 = px(a)+NW, y1 = py(a), x2 = px(b), y2 = py(b), mx = (x1+x2)/2;
+    return `<path d="M${x1} ${y1} C${mx} ${y1} ${mx} ${y2} ${x2} ${y2}" stroke="${b.color}"/>`;
+  }).join('');
+
+  const nodesH = recs.map(r=>{
+    const top = py(r) - 15;
+    if(r.isRoot) return `<div class="mnode root" style="left:${px(r)}px;top:${top}px;width:${NW}px">${esc(r.n.text)}</div>`;
+    const n = r.n;
+    const caret = r.all ? `<span class="mcar" data-tog="${n.id}" title="${r.open?'收埋':'展開'}">${r.open?'▾':'▸ '+r.all}</span>` : '';
+    return `<div class="mnode" style="left:${px(r)}px;top:${top}px;width:${NW}px;--gc:${r.color}">
+      <span class="mtx" data-edit="${n.id}" title="${escA(n.text)}">${n.star?'★ ':''}${esc(n.text)}</span>${badges(n)}${caret}
+    </div>`;
+  }).join('');
+
+  return `<div class="mapscroll"><div class="mapcanvas" style="width:${W}px;height:${H}px">
+    <svg width="${W}" height="${H}">${paths}</svg>${nodesH}</div></div>`;
+}
+
+function outlineHtml(){
+  let h = '<div class="outline">';
+  (function f(p,d){
+    eKids(p).forEach(n=>{
+      const kids = eKids(n.id), open = !collapsed.has(n.id);
+      h += `<div class="ol" style="padding-left:${d*22}px;--gc:${eTopColor(n)}">
+        <span class="ocar" ${kids.length?`data-tog="${n.id}"`:''}>${kids.length ? (open?'▾':'▸') : '·'}</span>
+        <span class="otx" data-edit="${n.id}">${n.star?'★ ':''}${esc(n.text)}</span>${badges(n)}
+        ${n.note ? `<span class="onote">${esc(n.note)}</span>` : ''}
+        <button class="oadd" data-add="${n.id}" title="加子項">+</button>
+      </div>`;
+      if(open) f(n.id, d+1);
+    });
+  })(null,0);
+  h += '<div class="addtop"><button class="linkbtn" data-add="top">+ 新組別</button></div></div>';
+  return h;
+}
+
+function pyramidHtml(){
+  const widths = {lead:46, senior:64, mid:82, junior:100};
+  const chip = n => {
+    const par = ePath(n).slice(-1)[0] || '';
+    return `<button class="pchip" data-edit="${n.id}" title="${escA([...ePath(n), n.text].join(' › '))}">${esc(n.text)}${par?`<small>${esc(par)}</small>`:''}</button>`;
+  };
+  let h = '<div class="pyr">';
+  [...LEVELS].reverse().forEach(l=>{
+    const ns = eng.nodes.filter(n=>n.level===l.k);
+    h += `<div class="tier" style="--lc:${l.color};--w:${widths[l.k]}%">
+      <div class="th"><b>${l.name}</b><span>${ns.length} 項</span></div>
+      <div class="tchips">${ns.map(chip).join('') || '<span class="tnone">未有，喺項目入面揀 level 就會出現喺呢度</span>'}</div>
+    </div>`;
+  });
+  const un = eng.nodes.filter(n=>!n.level && !eKids(n.id).length);
+  h += `<div class="tier unset"><div class="th"><b>未標 level</b><span>${un.length} 項</span></div>
+    <div class="tchips">${un.map(chip).join('') || '<span class="tnone">全部都標咗 level</span>'}</div></div></div>`;
+  return h;
+}
+
+/* ---------- 互動 ---------- */
+function toggleNode(id){
+  if(collapsed.has(id)) collapsed.delete(id); else collapsed.add(id);
+  saveCollapsed(); renderMap();
+}
+$('#mapBody').addEventListener('click',e=>{
+  const t = e.target.closest('[data-tog]'); if(t){ toggleNode(t.dataset.tog); return; }
+  const a = e.target.closest('[data-add]'); if(a){ openNodeModal(null, a.dataset.add==='top' ? null : a.dataset.add); return; }
+  const ed = e.target.closest('[data-edit]'); if(ed){ openNodeModal(ed.dataset.edit); }
+});
+$('#mapSeg').addEventListener('click',e=>{
+  const b = e.target.closest('button'); if(!b) return;
+  mapView = b.dataset.v; lsSet(LS_EVIEW, mapView); renderMap();
+});
+$('#mapExpand').addEventListener('click',()=>{ collapsed.clear(); saveCollapsed(); renderMap(); });
+$('#mapCollapse').addEventListener('click',()=>{
+  collapsed = new Set(eng.nodes.filter(n=>!n.parent && eKids(n.id).length).map(n=>n.id));
+  saveCollapsed(); renderMap();
+});
+function setMapMsg(t){ $('#mapMsg').textContent = t || ''; }
+$('#mapCopy').addEventListener('click',async()=>{
+  setMapMsg((await copyText(outlineMd())) ? '已複製大綱（Markdown），可以貼落新對話或者 Obsidian／XMind。' : '複製唔到，請用「大綱」視圖手動複製。');
+});
+$('#mapAsk').addEventListener('click',async()=>{
+  const q = $('#kwText').value.trim();
+  const txt = `我有一個 engineering mind map，大綱如下（[ ] 內係 level）：\n\n${outlineMd()}\n\n` +
+    (q ? `新 keyword：「${q}」\n請建議擺邊個現有組別，或者開新組別，並講明點解。`
+       : `我之後會俾 keyword 你，請建議擺邊個現有組別，或者開新組別，並講明點解。`);
+  setMapMsg((await copyText(txt)) ? '已複製，貼落 Claude 對話就可以問。' : '複製唔到，請用「複製大綱」再手動寫問題。');
+});
+
+/* 新增 keyword：字面配對只係輔助，真正判斷擺邊就用「問 Claude」 */
+function similar(q){
+  q = q.trim().toLowerCase();
+  if(q.length < 2) return [];
+  const toks = q.split(/[\s\/,，、()（）&\-]+/).filter(t=>t.length>=2);
+  return eng.nodes.map(n=>{
+    const t = n.text.toLowerCase(), h = t + ' ' + (n.note||'').toLowerCase();
+    let s = 0;
+    if(h.includes(q)) s += 3;
+    if(t.length >= 2 && q.includes(t)) s += 3;
+    toks.forEach(k=>{ if(h.includes(k)) s += 1; });
+    return {n, s};
+  }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,4);
+}
+function renderSug(){
+  const q = $('#kwText').value, box = $('#kwSug');
+  if(!q.trim()){ box.innerHTML = ''; return; }
+  const m = similar(q);
+  if(!m.length){
+    box.innerHTML = '<div class="sug">冇揾到字面相似嘅項目，可能係新組別。想知邊組最啱，撳「問 Claude」。</div>';
+    return;
+  }
+  box.innerHTML = '<div class="sug">有啲相似：' + m.map(({n})=>{
+    const path = [...ePath(n), n.text].join(' › ');
+    return `<span class="sugi">${esc(path)}
+      <button type="button" class="txtbtn" data-sug="${n.id}" data-as="child">放入佢下面</button>
+      <button type="button" class="txtbtn" data-sug="${n.id}" data-as="sib">同一層</button></span>`;
+  }).join('') + '</div>';
+}
+$('#kwText').addEventListener('input',renderSug);
+$('#kwSug').addEventListener('click',e=>{
+  const b = e.target.closest('[data-sug]'); if(!b) return;
+  const n = eGet(b.dataset.sug); if(!n) return;
+  $('#kwParent').value = b.dataset.as==='child' ? n.id : (n.parent || '');
+});
+$('#kwForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const text = $('#kwText').value.trim();
+  if(!text) return;
+  const parent = $('#kwParent').value || null;
+  const level = $('#kwLevel').value;
+  eng.nodes.push({id:uid(), text, parent, level, note:'', star:false, check:false, created:new Date().toISOString()});
+  if(parent){ collapsed.delete(parent); saveCollapsed(); }
+  $('#kwText').value = ''; $('#kwSug').innerHTML = '';
+  saveEng();
+  const p = parent && eGet(parent);
+  setMapMsg(`已加入「${text}」→ ${p ? p.text : '新組別'}`);
+  renderMap();
+});
+
+/* ---------- 視窗：新增／編輯項目 ---------- */
+function openNodeModal(id, presetParent){
+  const isNew = !id;
+  const n = isNew
+    ? {id:uid(), text:'', parent:presetParent||null, level:'', note:'', star:false, check:false, created:new Date().toISOString()}
+    : eGet(id);
+  if(!n) return;
+  let level = n.level, err = '', confirmDel = false;
+  const banned = isNew ? [] : [n.id, ...eDesc(n.id)];
+  const color = isNew ? 'var(--plum)' : eTopColor(n);
+  const root = $('#modalRoot');
+
+  const parentOpts = sel=>{
+    let h = '<option value="">（頂層組別）</option>';
+    (function f(p,d){
+      eKids(p).forEach(k=>{
+        if(banned.includes(k.id)) return;
+        h += `<option value="${k.id}" ${k.id===sel?'selected':''}>${'　'.repeat(d)}${esc(k.text)}</option>`;
+        f(k.id, d+1);
+      });
+    })(null,0);
+    return h;
+  };
+  const readVals = ()=>({
+    text:$('#nText').value, parent:$('#nParent').value, note:$('#nNote').value,
+    check:$('#nCheck') ? $('#nCheck').checked : false
+  });
+
+  function paint(v){
+    v = v || {text:n.text, parent:n.parent||'', note:n.note, check:n.check};
+    const lvBtns = [['','未標'], ...LEVELS.map(l=>[l.k,l.name])];
+    root.innerHTML = `
+    <div class="mbg" id="mbg"><div class="modal" style="--c:${color}">
+      <div class="top">
+        <div><h3>${isNew?'新增項目':'編輯項目'}</h3>
+          ${!isNew ? `<div class="meta">${esc(ePath(n).join(' › ') || '頂層組別')}</div>` : '<div class="meta">&nbsp;</div>'}</div>
+        <button class="close" id="mclose">×</button>
+      </div>
+      ${err ? `<div class="warn">${esc(err)}</div>` : ''}
+      <div class="field"><label>名稱（你自己嘅原文）</label><input id="nText" type="text" value="${escA(v.text)}" autocomplete="off"></div>
+      <div class="field"><label>放喺邊</label><select id="nParent">${parentOpts(v.parent)}</select></div>
+      <div class="field"><label>Level</label>
+        <div class="seg">${lvBtns.map(([k,t])=>`<button type="button" data-lv="${k}" class="${level===k?'on':''}">${t}</button>`).join('')}</div>
+      </div>
+      <div class="field"><label>備註</label><input id="nNote" type="text" value="${escA(v.note)}" autocomplete="off"></div>
+      ${n.check ? `<label class="chk"><input type="checkbox" id="nCheck" ${v.check?'checked':''}> 手寫唔肯定，仲未核對（核對好就取消剔）</label>` : ''}
+      <div class="macts">
+        <div>${isNew ? '' : (confirmDel
+          ? `<span class="cf">連同 ${banned.length-1} 個子項一齊刪除？</span><button class="dangerbtn" id="nDelYes">刪除</button> <button class="txtbtn" id="nDelNo">取消</button>`
+          : `<button class="txtbtn danger" id="nDel">刪除</button> <button class="txtbtn" id="nAddKid">+ 加子項</button>`)}</div>
+        <div class="r"><button class="btn ghost" id="nCancel">取消</button><button class="btn" id="nSave">儲存</button></div>
+      </div>
+    </div></div>`;
+    wireClose();
+    $$('#modalRoot .seg button').forEach(b=>b.addEventListener('click',()=>{
+      level = b.dataset.lv;
+      $$('#modalRoot .seg button').forEach(x=>x.classList.toggle('on', x===b));
+    }));
+    $('#nCancel').onclick = closeModal;
+    $('#nSave').onclick = ()=>{
+      const val = readVals();
+      const text = val.text.trim();
+      if(!text){ err = '請輸入名稱。'; paint(val); return; }
+      const parent = val.parent || null;
+      const note = val.note.trim();
+      if(isNew){
+        Object.assign(n, {text, parent, level, note, check:false});
+        eng.nodes.push(n);
+      }else{
+        const moved = n.parent !== parent;
+        Object.assign(n, {text, parent, level, note, check:n.check ? val.check : false});
+        if(moved){ eng.nodes = eng.nodes.filter(x=>x.id!==n.id); eng.nodes.push(n); }
+      }
+      if(parent){ collapsed.delete(parent); saveCollapsed(); }
+      saveEng(); closeModal();
+    };
+    const d1 = $('#nDel'); if(d1) d1.onclick = ()=>{ const val = readVals(); confirmDel = true; paint(val); };
+    const d2 = $('#nDelNo'); if(d2) d2.onclick = ()=>{ const val = readVals(); confirmDel = false; paint(val); };
+    const d3 = $('#nDelYes'); if(d3) d3.onclick = ()=>{
+      const gone = new Set(banned);
+      eng.nodes = eng.nodes.filter(x=>!gone.has(x.id));
+      saveEng(); closeModal();
+    };
+    const k1 = $('#nAddKid'); if(k1) k1.onclick = ()=>{ closeModal(); openNodeModal(null, n.id); };
+    if(isNew) $('#nText').focus();
+  }
+  paint();
+}
+
+/* =====================================================================
    分頁 + 啟動
    ===================================================================== */
+const TABS = ['friends','goals','cpd','map'];
 function showTab(t){
-  ['friends','goals','cpd'].forEach(x=>{ $('#view-'+x).hidden = (x!==t); });
+  TABS.forEach(x=>{ $('#view-'+x).hidden = (x!==t); });
   $$('.tabs button').forEach(b=>b.classList.toggle('on', b.dataset.tab===t));
   try{ localStorage.setItem(LS_TAB, t); }catch(e){}
 }
@@ -1226,7 +1785,7 @@ $$('.tabs button').forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.t
 
 $('#todayStr').textContent = new Date().toLocaleDateString('zh-HK',{month:'long',day:'numeric',weekday:'long'});
 let startTab = 'friends';
-try{ const t = localStorage.getItem(LS_TAB); if(t==='goals'||t==='friends'||t==='cpd') startTab = t; }catch(e){}
+try{ const t = localStorage.getItem(LS_TAB); if(TABS.includes(t)) startTab = t; }catch(e){}
 showTab(startTab);
 renderAllViews();
 initSync();
