@@ -203,6 +203,17 @@
   .pchip small{display:block;font-size:10px;color:var(--ink-soft);}
   .tnone{font-size:12px;color:var(--ink-soft);}
   .tier.unset{--lc:#B5AE9C;--w:100%;margin-top:18px;border-style:dashed;}
+  .maphint{font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;font-size:12px;color:var(--ink-soft);margin:-4px 0 10px;line-height:1.5;}
+  .mnode,.ol{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+  .mdrag,.ohandle{cursor:grab;color:#B5AE9C;font-size:13px;line-height:1;touch-action:none;user-select:none;-webkit-user-select:none;padding:4px 3px;flex:none;}
+  .mdrag:hover,.ohandle:hover{color:var(--plum);}
+  .dghost{position:fixed;z-index:40;pointer-events:none;background:var(--plum);color:#fff;border-radius:3px;padding:6px 10px;font-size:13px;font-family:-apple-system,"PingFang HK","Microsoft JhengHei",sans-serif;box-shadow:0 6px 18px rgba(0,0,0,.25);max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.92;}
+  body.dragging,body.dragging *{cursor:grabbing !important;}
+  .dragsrc{opacity:.4;}
+  .mnode.drop-child,.ol.drop-child{outline:2px solid var(--plum);background:#F6ECF1;}
+  .mnode.drop-before,.ol.drop-before{box-shadow:0 -3px 0 0 var(--plum);}
+  .mnode.drop-after,.ol.drop-after{box-shadow:0 3px 0 0 var(--plum);}
+  .mnode.drop-bad,.ol.drop-bad{outline:2px dashed #C0453A;}
   .dpair{border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin-bottom:10px;background:#fff;font-size:13px;}
   .dpair .dn{margin-bottom:6px;word-break:break-word;}
   .dpair .dn b{font-size:14px;font-weight:600;}
@@ -379,6 +390,7 @@
         <button class="btn" type="button" id="mapAsk">問 Claude</button>
       </div>
     </div>
+    <div class="maphint" id="mapHint">拖動方塊（手機用左邊嘅 ⠿）去另一個方塊：放喺中間 = 變成佢嘅子項，放喺上邊／下邊 = 排喺佢前面／後面，放喺「工程能力」 = 變頂層組別。</div>
     <div id="mapBody"></div>
   </section>
 </div>
@@ -1521,12 +1533,16 @@ function renderKwOptions(){
 function renderMap(){
   $$('#mapSeg button').forEach(b=>b.classList.toggle('on', b.dataset.v===mapView));
   renderKwOptions();
+  $('#mapHint').hidden = (mapView==='pyramid');
   const body = $('#mapBody');
   if(!eKids(null).length){
     body.innerHTML = '<div class="empty">仲未有內容，喺上面輸入第一個 keyword（揀「新組別」就會開一個頂層組別）。</div>';
     return;
   }
+  const sc0 = $('.mapscroll'), pos = sc0 ? [sc0.scrollLeft, sc0.scrollTop] : null;   // 重繪後保留捲動位置
   body.innerHTML = mapView==='map' ? mapHtml() : mapView==='outline' ? outlineHtml() : pyramidHtml();
+  const sc1 = $('.mapscroll');
+  if(pos && sc1){ sc1.scrollLeft = pos[0]; sc1.scrollTop = pos[1]; }
 }
 
 function mapHtml(){
@@ -1561,11 +1577,11 @@ function mapHtml(){
 
   const nodesH = recs.map(r=>{
     const top = py(r) - 15;
-    if(r.isRoot) return `<div class="mnode root" style="left:${px(r)}px;top:${top}px;width:${NW}px">${esc(r.n.text)}</div>`;
+    if(r.isRoot) return `<div class="mnode root" data-root="1" style="left:${px(r)}px;top:${top}px;width:${NW}px">${esc(r.n.text)}</div>`;
     const n = r.n;
     const caret = r.all ? `<span class="mcar" data-tog="${n.id}" title="${r.open?'收埋':'展開'}">${r.open?'▾':'▸ '+r.all}</span>` : '';
-    return `<div class="mnode" style="left:${px(r)}px;top:${top}px;width:${NW}px;--gc:${r.color}">
-      <span class="mtx" data-edit="${n.id}" title="${escA(n.text)}">${n.star?'★ ':''}${esc(n.text)}</span>${badges(n)}${caret}
+    return `<div class="mnode" data-nid="${n.id}" style="left:${px(r)}px;top:${top}px;width:${NW}px;--gc:${r.color}">
+      <span class="mdrag" title="拖動">⠿</span><span class="mtx" data-edit="${n.id}" title="${escA(n.text)}">${n.star?'★ ':''}${esc(n.text)}</span>${badges(n)}${caret}
     </div>`;
   }).join('');
 
@@ -1578,8 +1594,9 @@ function outlineHtml(){
   (function f(p,d){
     eKids(p).forEach(n=>{
       const kids = eKids(n.id), open = !collapsed.has(n.id);
-      h += `<div class="ol" style="padding-left:${d*22}px;--gc:${eTopColor(n)}">
-        <span class="ocar" ${kids.length?`data-tog="${n.id}"`:''}>${kids.length ? (open?'▾':'▸') : '·'}</span>
+      h += `<div class="ol" data-nid="${n.id}" style="padding-left:${d*22}px;--gc:${eTopColor(n)}">
+        <span class="ohandle" title="拖動">⠿</span>
+        <span class="ocar"${kids.length?`data-tog="${n.id}"`:''}>${kids.length ? (open?'▾':'▸') : '·'}</span>
         <span class="otx" data-edit="${n.id}">${n.star?'★ ':''}${esc(n.text)}</span>${badges(n)}
         ${n.note ? `<span class="onote">${esc(n.note)}</span>` : ''}
         <button class="oadd" data-add="${n.id}" title="加子項">+</button>
@@ -1671,6 +1688,145 @@ function renderSug(){
       <button type="button" class="txtbtn" data-sug="${n.id}" data-as="sib">同一層</button></span>`;
   }).join('') + '</div>';
 }
+/* ---------- 拖動 ---------- */
+/* 滑鼠：拖成個方塊（郁超過 6px 先算拖，唔影響撳字改名）。
+   手機：用方塊左邊嘅 ⠿ 拖，其他位置照舊係捲動。
+   放喺目標中間 = 變子項；放喺上／下四分之一 = 排喺佢前面／後面；放喺「工程能力」 = 變頂層。 */
+let drag = null, justDragged = false;
+
+function moveNode(id, targetId, zone){
+  const n = eGet(id); if(!n) return false;
+  if(zone==='root'){
+    n.parent = null;
+    eng.nodes = eng.nodes.filter(x=>x.id!==id); eng.nodes.push(n);
+    return true;
+  }
+  const t = eGet(targetId); if(!t) return false;
+  if(id===targetId || eDesc(id).includes(targetId)) return false;
+  eng.nodes = eng.nodes.filter(x=>x.id!==id);
+  if(zone==='child'){
+    n.parent = t.id; eng.nodes.push(n);
+    collapsed.delete(t.id); saveCollapsed();
+  }else{
+    n.parent = t.parent;
+    const i = eng.nodes.indexOf(t);
+    eng.nodes.splice(zone==='before' ? i : i+1, 0, n);
+  }
+  return true;
+}
+function dropInfo(x, y){
+  const els = document.elementsFromPoint ? document.elementsFromPoint(x, y) : [];
+  for(const el of els){
+    const host = el.closest && el.closest('[data-nid],[data-root]');
+    if(!host || !$('#mapBody').contains(host)) continue;
+    if(host.hasAttribute('data-root')) return {host, id:null, zone:'root'};
+    const r = host.getBoundingClientRect();
+    const f = r.height ? (y - r.top) / r.height : 0.5;
+    return {host, id:host.dataset.nid, zone: f<0.25 ? 'before' : f>0.75 ? 'after' : 'child'};
+  }
+  return null;
+}
+function dropValid(info){
+  if(!info || !drag) return false;
+  if(info.zone==='root') return true;
+  return !drag.banned.has(info.id);
+}
+function clearDropMarks(){
+  $$('#mapBody .drop-child,#mapBody .drop-before,#mapBody .drop-after,#mapBody .drop-bad')
+    .forEach(el=>el.classList.remove('drop-child','drop-before','drop-after','drop-bad'));
+}
+function updateTarget(){
+  clearDropMarks();
+  const info = dropInfo(drag.x, drag.y);
+  drag.info = info;
+  if(!info) return;
+  info.host.classList.add(dropValid(info) ? 'drop-' + (info.zone==='root' ? 'child' : info.zone) : 'drop-bad');
+}
+function dragTick(){
+  if(!drag || !drag.active) return;
+  const sc = $('.mapscroll');
+  if(sc){
+    const r = sc.getBoundingClientRect(), m = 46, v = 14;
+    if(drag.y < r.top + m) sc.scrollTop -= v; else if(drag.y > r.bottom - m) sc.scrollTop += v;
+    if(drag.x < r.left + m) sc.scrollLeft -= v; else if(drag.x > r.right - m) sc.scrollLeft += v;
+  }else{
+    if(drag.y < 60) window.scrollBy(0,-14); else if(drag.y > window.innerHeight - 60) window.scrollBy(0,14);
+  }
+  updateTarget();
+}
+function startDrag(){
+  drag.active = true;
+  const n = eGet(drag.id);
+  const g = document.createElement('div');
+  g.className = 'dghost'; g.textContent = n ? n.text : '';
+  document.body.appendChild(g);
+  drag.ghost = g;
+  document.body.classList.add('dragging');
+  drag.host.classList.add('dragsrc');
+  drag.timer = setInterval(dragTick, 40);
+}
+function dragMove(e){
+  if(!drag || e.pointerId !== drag.pid) return;
+  drag.x = e.clientX; drag.y = e.clientY;
+  if(!drag.active){
+    if(Math.hypot(drag.x - drag.sx, drag.y - drag.sy) < 6) return;
+    startDrag();
+  }
+  drag.ghost.style.left = (drag.x + 12) + 'px';
+  drag.ghost.style.top = (drag.y + 12) + 'px';
+  updateTarget();
+}
+function endDrag(commit){
+  if(!drag) return;
+  document.removeEventListener('pointermove', dragMove);
+  document.removeEventListener('pointerup', dragUp);
+  document.removeEventListener('pointercancel', dragCancel);
+  const d = drag; drag = null;
+  if(!d.active) return;
+  clearInterval(d.timer);
+  if(d.ghost) d.ghost.remove();
+  document.body.classList.remove('dragging');
+  d.host.classList.remove('dragsrc');
+  clearDropMarks();
+  justDragged = true; setTimeout(()=>{ justDragged = false; }, 80);   // 放手後唔好當係 click
+  const info = d.info;
+  drag = d;                       // 借用 dropValid 檢查
+  const ok = commit && dropValid(info);
+  drag = null;
+  if(!ok) return;
+  const n = eGet(d.id), t = info.id ? eGet(info.id) : null;
+  if(moveNode(d.id, info.id, info.zone)){
+    saveEng();
+    setMapMsg(info.zone==='root' ? `已將「${n.text}」變成頂層組別`
+      : info.zone==='child' ? `已將「${n.text}」放入「${t.text}」`
+      : `已將「${n.text}」排喺「${t.text}」${info.zone==='before' ? '前面' : '後面'}`);
+    renderMap();
+  }
+}
+function dragUp(e){ if(drag && e.pointerId === drag.pid) endDrag(true); }
+function dragCancel(e){ if(drag && e.pointerId === drag.pid) endDrag(false); }
+
+$('#mapBody').addEventListener('click',e=>{
+  if(justDragged){ e.stopPropagation(); e.preventDefault(); }
+}, true);
+$('#mapBody').addEventListener('pointerdown',e=>{
+  if(drag) return;
+  if(e.pointerType==='mouse' && e.button!==0) return;
+  const handle = e.target.closest('.mdrag,.ohandle');
+  const host = e.target.closest('[data-nid]'); if(!host) return;
+  if(!handle){
+    if(e.pointerType!=='mouse') return;                 // 手指撳方塊其他位置 = 捲動，要用 ⠿ 先拖
+    if(e.target.closest('[data-tog],[data-add],button,input,select,textarea')) return;
+  }
+  const n = eGet(host.dataset.nid); if(!n) return;
+  drag = {id:n.id, host, sx:e.clientX, sy:e.clientY, x:e.clientX, y:e.clientY, pid:e.pointerId,
+          active:false, ghost:null, info:null, timer:null, banned:new Set([n.id, ...eDesc(n.id)])};
+  document.addEventListener('pointermove', dragMove);
+  document.addEventListener('pointerup', dragUp);
+  document.addEventListener('pointercancel', dragCancel);
+  if(handle) e.preventDefault();
+});
+
 /* ---------- 重複檢查 ---------- */
 /* 比較時唔理大細寫、空格同常見符號，所以 Bluebeam／bluebeam／Blue beam 都當同一個 */
 const normT = s => String(s).toLowerCase().replace(/[\s\/\\,，、.。()（）\[\]&＆\-_:：;；'"’“”!?？！+=]+/g,'');
